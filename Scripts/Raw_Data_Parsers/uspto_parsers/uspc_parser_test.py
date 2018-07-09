@@ -1,6 +1,6 @@
 import sys
 import os
-from uspc_table import parse_and_write_uspc, parse_uspc_patents
+from uspc_parser import parse_and_write_uspc, parse_uspc_patents
 from parser_utils import download
 
 if __name__ == '__main__':
