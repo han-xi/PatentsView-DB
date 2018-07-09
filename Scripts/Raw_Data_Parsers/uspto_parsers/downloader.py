@@ -154,6 +154,39 @@ def find_ipc_url():
     return base_url + potential_links[0]
 
 
+def download_withdrawn_patent_numbers(destination_folder):
+    """ Download and extract the list of withdrawn patents """
+
+    # Download
+    url = 'https://www.uspto.gov/sites/default/files/documents/withdrawn.zip'
+    filepath = os.path.join(destination_folder, 'withdrawn.zip')
+    print("Destination: {}".format(filepath))
+    download(url=url, filepath=filepath)
+
+    # Rename and unzip the contained textfile
+
+    # Zip files should contain a single text file: withdrawnMMDDYYYY.txt
+    z = zipfile.ZipFile(filepath)
+    potential_files = [file for file in z.infolist()
+                       if file.filename.startswith('withdrawn')
+                       and file.filename.endswith('.txt')]
+
+    # If the zip file doesn't match what we expect, raise an error
+    assert (len(potential_files) == 1), \
+        "Zero or multiple files found; unsure which to parse: "\
+        "{}".format(potential_files)
+
+    # Strip the date to make this filename consistent between updates
+    withdrawn_patent_file = z.infolist()[0]
+    withdrawn_patent_file.filename = 'withdrawn.txt'
+    z.extract(withdrawn_patent_file, path=destination_folder)
+    z.close()
+
+    # Remove the original zip file
+    print("Removing: {}".format(filepath))
+    os.remove(filepath)
+
+
 ############################################
 # TESTS
 # TODO: Organize as unit tests
@@ -182,7 +215,7 @@ if __name__ == '__main__':
     import sys
     import datetime
 
-    # Find URLs correctly
+    # # Find URLs correctly
     print(find_cpc_schema_url())
     find_cpc_schema_url_test()
 
@@ -201,3 +234,5 @@ if __name__ == '__main__':
     print(str(datetime.datetime.now()))
     download_ipc(destination_folder)  # <1 min
     print(str(datetime.datetime.now()))
+
+    download_withdrawn_patent_numbers(destination_folder)
