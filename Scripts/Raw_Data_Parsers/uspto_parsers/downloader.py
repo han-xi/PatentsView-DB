@@ -156,6 +156,7 @@ def find_ipc_url():
 
 ############################################
 # TESTS
+# TODO: Organize as unit tests
 ############################################
 
 def find_cpc_schema_url_test():
@@ -200,35 +201,3 @@ if __name__ == '__main__':
     print(str(datetime.datetime.now()))
     download_ipc(destination_folder)  # <1 min
     print(str(datetime.datetime.now()))
-
-
-############################################
-# OLD FUNCTIONS
-############################################
-
-def download_input(working_directory):
-    #get the latest cpc master list
-    connection = urllib.urlopen('https://bulkdata.uspto.gov/data/patent/classification/cpc/')
-    dom =  lxml.html.fromstring(connection.read())
-    #look up the file names as they change based on date
-    for link in dom.xpath('//a/@href'):
-        if link.startswith("US_Grant_CPC_MCF_Text"):
-            grant = link
-            grant_url = "https://bulkdata.uspto.gov/data/patent/classification/cpc/" + link
-        if link.startswith("US_PGPub_CPC_MCF_Text"):
-            ppubs = link
-            ppubs_url = "https://bulkdata.uspto.gov/data/patent/classification/cpc/" + link
-    os.mkdir(working_directory + "/CPC_input")
-    # urllib.urlretrieve(grant_url, working_directory +"/CPC_input/" + grant )
-    print("Downloading: {}".format(ppubs_url))
-    urllib.urlretrieve(ppubs_url, working_directory +"/CPC_input/" + ppubs)
-    print("Downloaded!")
-def download_ipc(working_directory):
-    connection = urllib.urlopen('http://www.cooperativepatentclassification.org/cpcConcordances.html')
-    dom =  lxml.html.fromstring(connection.read())
-    #look up the exact name of the concordance which changes based on montn
-    for link in dom.xpath('//a/@href'):
-        if link.startswith("/cpcConcordances/CPCtoIPCtxt"):
-            ipc_concordance = "http://www.cooperativepatentclassification.org/" + link
-    os.mkdir(working_directory + "/WIPO_input")
-    urllib.urlretrieve(ipc_concordance, working_directory + "/WIPO_input/ipc_concordance.txt")
