@@ -14,15 +14,12 @@ if [ $size -le 0 ]; then
     read USER
     echo -n "DB Password: "
     read -s PASSWORD
-    configoption="--user=$USER \
-                  --password=$PASSWORD"
+    configoption="--user=$USER --password=$PASSWORD"
 fi
 
 
-
-
 # Option to debug--used internally
-DEBUG="Yes"
+# DEBUG="No"
 
 
 
@@ -39,6 +36,8 @@ while read table; do
         ("location_inventor") selectStatement="SELECT rl.location_id, ri.inventor_id from rawinventor ri left join rawlocation rl on rl.id = ri.rawlocation_id where ri.inventor_id is not NULL and rl.location_id is not NULL" ;;
         ("rawlawyer") selectStatement="SELECT uuid, lawyer_id, patent_id, name_first, name_last, organization, country, sequence FROM rawlawyer" ;;
         ("rawlocation") selectStatement="SELECT id, location_id, city, state, country_transformed as country, location_id_transformed as latlong from rawlocation" ;;
+        ("draw_desc_text") selectStatement="SELECT uuid, patent_id, replace(replace(replace(text, '\r', ' '), '\n', ' '), '\t', ' ') as text, sequence from draw_desc_text " ;;
+        ("brf_sum_text") selectStatement="SELECT uuid, patent_id, replace(replace(replace(text, '\r', ' '), '\n', ' '), '\t', ' ') as text from brf_sum_text " ;;
         # Tables with standard select statements
         (*) selectStatement="SELECT * FROM $table"
     esac
@@ -52,7 +51,7 @@ while read table; do
     if [[ $table = 'detail_desc_text' ]]; then
 
         # Count how many rows are in detail_desc_text
-        rows=$(mysql -s $configoption\
+        rows=$(mysql -s $configoption \
                         --host="$HOST" \
                         --database="$DB" \
                         --execute="SELECT count(*) FROM detail_desc_text; ")
@@ -64,10 +63,10 @@ while read table; do
 
                 # To debug, limit tables to a single row.
                 if [[ "$DEBUG" == "Yes" ]]; then
-                    selectStatement="SELECT * FROM detail_desc_text LIMIT 1 OFFSET 0 "
+                    selectStatement="SELECT uuid, patent_id, replace(replace(replace(text, '\r', ' '), '\n', ' '), '\t', ' ') as text, length FROM detail_desc_text LIMIT 1 OFFSET 0 "
                 else
                     offset=$(( i*rowsPerTable - rowsPerTable ))
-                    selectStatement="SELECT * FROM detail_desc_text LIMIT $rowsPerTable OFFSET $offset "
+                    selectStatement="SELECT uuid, patent_id, replace(replace(replace(text, '\r', ' '), '\n', ' '), '\t', ' ') as text, length FROM detail_desc_text LIMIT $rowsPerTable OFFSET $offset "
                 fi
 
                 echo "$selectStatement" | \
@@ -82,7 +81,7 @@ while read table; do
             echo "unable to determine # rows to generate detail_desc_text zip files"
         fi
     else
-        echo "$selectStatement" | mysql "$configoption" \
+        echo "$selectStatement" | mysql $configoption \
                                         --quick \
                                         --host="$HOST" \
                                         --database="$DB" > "$table.tsv"; 
@@ -94,4 +93,3 @@ while read table; do
     ((tablesCompleted++))
     echo "(" $tablesCompleted " of " $numTables " tables downloaded)" 
 done < $TABLE_FILE
-
