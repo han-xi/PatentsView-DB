@@ -40,7 +40,7 @@ def create_temp_patent_table(host, username, password,
         """
         INSERT INTO temp_patent_update
             SELECT p.*,
-            IF(w.id, 1, 0) withdrawn
+            IF(w.id IS NOT NULL, 1, 0) withdrawn
         FROM patent p
         LEFT JOIN temp_withdrawn_patents w ON p.id = w.id
        """
@@ -69,6 +69,7 @@ def parse_withdrawn_patents(filepath):
     print(withdrawn_patents[:10])
     print(withdrawn_patents[-10:])
     return withdrawn_patents
+
 
 def parse_patent_number(patent_number):
     ''' Strip leading 0s from patent numbers, maintaining letter prefixes '''
