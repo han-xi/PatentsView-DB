@@ -95,7 +95,6 @@ def main():
             AIR_grid_position = grid_position[str(male_dummy)]
             results[EM_grid_position][AIR_grid_position] += 1
 
-
         print_grid(results)
 
 
