@@ -117,7 +117,7 @@ sub cleanContracts () {
   }
 }
 
-# Requires: filepaths for all files
+# Requires: omitLocsFile
 # Modifies: nothing
 # Effects: initialize by reading from files 
 sub init () {
@@ -181,8 +181,13 @@ sub doNer() {
     if ($#nersIn >= $NERFC || $i == $#patKeys ) {
       # open file, mode write 
       open FILE, ">", "$nerDir/in/$fc.txt" or die "Cannot open temporary  file $nerDir/in/$fc.txt $!\n";
+      #print($#nersIn);
+      #print($#patKeys);
+      print($i);
       #open FILE, ">", "in/$fc.txt" or die "Cannot open temporary -here-  file in/$fc.txt $!\n";
       print FILE (join ("\n", @nersIn));
+      
+      #print(@nersIn);
       close FILE;
       # increment
       $fc++;
@@ -191,6 +196,7 @@ sub doNer() {
     }
     # increment
     $i++;
+    close FILE; 
   }
 
   `rm -f error.log`; # remove the error log before staring a new NER run
