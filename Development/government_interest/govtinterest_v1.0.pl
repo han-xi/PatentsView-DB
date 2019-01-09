@@ -103,13 +103,13 @@ sub cleanContracts () {
     
     my $giStmt = $data->{$pn}->{"giStmt"};
     my @ids = @{$data->{$pn}->{"ids"}};
-    # match San Diego searching only $_ var case insensitive
+    # match San Diego searching var case insensitive
     if ($giStmt =~ m/San Diego(,)?/i) {
-      # find giStatements without CA, certain digit codes
+      # find giStatements without CA, certain contract codes?
       my @results = grep (!/((CA\s)?92152(-\d{4,4})?|72120|20012|53510|D0012|53560)/, @ids);
       $data->{$pn}->{"ids"} = \@results;
     }
-    # match Bethesda delimited search only $_
+    # match Bethesda 
     if ($giStmt =~ m/Bethesda(,)?/i) {
       my @results = grep (!/20014|20892/, @ids);
       $data->{$pn}->{"ids"} = \@results;
@@ -183,7 +183,7 @@ sub doNer() {
       open FILE, ">", "$nerDir/in/$fc.txt" or die "Cannot open temporary  file $nerDir/in/$fc.txt $!\n";
       #print($#nersIn);
       #print($#patKeys);
-      print($i);
+     #print($i);
       #open FILE, ">", "in/$fc.txt" or die "Cannot open temporary -here-  file in/$fc.txt $!\n";
       print FILE (join ("\n", @nersIn));
       
@@ -332,8 +332,8 @@ sub trimWord ($) {
 # Effects: parses Phone numbers
 sub parseNums () {
   # create arrays
-  # shift - return 1st value of array
-  my @in = split (" ", shift); # punctuation in tact
+  # split giStatement field into words
+  my @in = split (" ", shift); 
   # map trimWord () to array
   my @words = map ( trimWord($_), @in); # trim all beginning and ending punctuation 
   my %candidates;  # all things that look like contract or award numbers
@@ -342,7 +342,7 @@ sub parseNums () {
 
   # find all base contract and award segments 
   for (my $i=0; $i <= $#words; $i++) {
-    # loop through, check first
+    # loop through, substitute punctuation "" to remove it
     (my $noPunctWord = $words[$i]) =~ s,[[:punct:]],,sg; 
     # grab all words with alphanumeric combinations or words with 5+ digits, signalling an award or contract number
     if ( ( $noPunctWord =~ m,\d+, && $noPunctWord =~ m,[[:alpha:]], && length($noPunctWord) > 3 ) || $noPunctWord =~ m/\d{5,}/ ) {
@@ -357,7 +357,7 @@ sub parseNums () {
     my $val = $candidates{$pos};
     # check to see if the previous words are between one and four characters and consists of cap letters and/or numbers,
     # in which case it should be part of the identifier.  Mind the punctuation in the original word
-    # Stopped review here
+    
     my $id = $val;
     for (my $pb = $pos - 1; $pb >= 0; $pb--) {
       if ( ($words[$pb] =~ m/^[A-Z0-9]{1,6}$/  && $words[$pb] !~ m,^A$, && $in[$pb] !~ m,[[:punct:]]$,) || 
@@ -392,13 +392,18 @@ sub parseNums () {
     $ids{$id} = 1;
   }
   
-  # print "\tAll ids for record: ", Dumper (\%ids);
-  # print "\tAll removes for record: ", Dumper (\%removes);
+   print "\tAll ids for record: ", Dumper (\%ids);
+   print "\tAll removes for record: ", Dumper (\%removes);
   
   # remove all items from the ids array
   my @diff = grep { not exists $removes{$_} } keys (%ids);
   
   # strip phone numbers
+  # start with (, maybe +1 followed by space or -, 1 or 0 ( then 3 digits )
+  # /^(\+?1?(\s|-)?\(?[0-9]{3,3}\)?) 
+  # whitespace or dash, then 3 digits, whitespace/dash, last 4
+  # (\s|-)?[0-9]{3,3}(-|\s)+[0-9]{4,4}$
+  # if length of phone # is less than length of @diff array, giStatement has phone number
   my @noPhone = grep (!/^(\+?1?(\s|-)?\(?[0-9]{3,3}\)?)(\s|-)?[0-9]{3,3}(-|\s)+[0-9]{4,4}$/, @diff );
     $hasPhoneNumber = 1 if ($#noPhone < $#diff );
   

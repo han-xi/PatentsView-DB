@@ -1,5 +1,10 @@
 import pandas as pd
 import sys
+import math
+import subprocess
+import os
+from nltk.tag import StanfordNERTagger
+from nltk.tokenize import word_tokenize
 # run under pl_rewrite virtualenv
 # python G:\PatentsView\cssip\PatentsView-DB\Development\government_interest\govtinterest_v2.0.py
 # Python version 3.6
@@ -62,38 +67,62 @@ def read_mergedCSV(fp):
 			
 	return merged_df 
 
-# Requires: NER DataBase filepath
+# Requires: NER DataBase filepath, input
 # Modifies: nothing
-# Effects: Process NER data
-def do_NER(fp, merged_df):
+# Effects: Run NER
+def run_NER(fp, merged_df, classif, classif_dirs ):
 	# loop through patents (6127)
 	patents = merged_df['patent_num'].tolist()
 	print(len(patents))
+	
 	#print(patents[0:5])
 	# add acronym cleanup func later - doesn't appear to need replacement
-	#merged_df['gi_stmt'].str.replace('')
+	#merged_df['gi_stmt'].str.replace()
 	gi_stmt_full = merged_df['gi_stmt'].tolist()
-	# take gi_stmts, all together - 5000 split?
-	print(len(gi_stmt_full))
 	nerfc = 5000
-	num_files = int(len(gi_stmt_full) / nerfc)
-	idx = 0
+
+	num_files = int(math.ceil(len(gi_stmt_full) / nerfc))
+	input_files = []
+	#print(str(num_files) + 'is # of files')
+	# Note: Rewrite - support more than 2 files...
+	text1 = ''
+	text2 = ''
 	for num in range(0,num_files):
-		 with open(fp + 'in/' + str(num) + 'test.txt', 'w', encoding='utf-8') as f:
-		 	if(num == 1):
+		#print("now running file " + str(num))
+		with open(fp + 'in/' + str(num) + 'test.txt', 'w', encoding='utf-8') as f:
+		 	if(num == 0):
 		 		gi_stmt_str = '\n'.join(gi_stmt_full[0:nerfc])
-		 		idx = 5000
-		 
+		 		text1 = gi_stmt_str
 		 	else:
-		 		gi_stmt_str = '\n'.join(gi_stmt_full[idx + 1:len(gi_stmt_full)])
-		 
+		 		gi_stmt_str = '\n'.join(gi_stmt_full[nerfc:len(gi_stmt_full)])
+		 		text2 = gi_stmt_str
 		 	f.write(gi_stmt_str)
-		 	f.close()
+		 	input_files.append(str(num) + 'test.txt')
 
-
-	#for gi in gi_stmt_full:
-
-
+	os.chdir(fp + 'stanford-ner-2017-06-09/')
+	cf_fp = fp + 'stanford-ner-2017-06-09/'
+	print(os.getcwd())
+	jar = os.getcwd()
+	for cf in classif:
+		print("now running NER on: " + cf)
+		for f in input_files:
+			print("with file: " + f )
+			cf_fp = cf_fp + cf
+			print("Classfier PATH: " + cf_fp)
+			jar_fp = jar + '/' + 'stanford-ner.jar'
+			print("stanford ner PATH: " + cf_fp)
+			st = StanfordNERTagger(cf_fp,jar_fp , encoding='utf-8')
+			tokenized = word_tokenize(text1)
+			tagged = st.tag(tokenized)
+			print(tagged)
+			# cmd_pt1 = 'java -mx500m -cp \".stanford-ner.jar;./lib/*\"" edu.stanford.nlp.ie.crf.CRFClassifier'
+			# cmd_pt2 = '-loadClassifier ' + cf
+			# cmd_pt3 = '-textFile in/' + f + ' -outputFormat inlineXML 2>> error.log'
+			# cmd_full = cmd_pt1 + ' ' + cmd_pt2 + ' ' + cmd_pt3
+			# cmdline_params = cmd_full.split()
+			# print(cmdline_params)
+			# p = subprocess.run(cmdline_params)
+			# #print("returncode: ", p.returncode)
 	return
 
 
@@ -101,7 +130,7 @@ def do_NER(fp, merged_df):
 # Modifies: nothing
 # Effects: Process NER on data dict from merged_csvs
 # Check if uniq function definition is needed
-def process_data_NER(data):
+def process_NER(data):
 
 	return
 
@@ -153,23 +182,26 @@ if __name__ == '__main__':
 
 	print("Hello World")
 
-	# declare filepaths
+	# set up vars + directories
 	omitLocs_dir = "D:/DataBaseUpdate/2018_Nov/contract_award_patch/"
 	merged_dir = "D:/DataBaseUpdate/2018_Nov/contract_award_patch/"
 	ner_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/"
+	
+	classifiers = ['classifiers/english.all.3class.distsim.crf.ser.gz', 'classifiers/english.conll.4class.distsim.crf.ser.gz', 'classifiers/english.muc.7class.distsim.crf.ser.gz']
+	ner_classif_dirs = ['out-3class', 'out-4class', 'out-7class']
+
+	
 	omitLocs_df, omitLocs = read_omitLocs(omitLocs_dir)
-
 	merged_df = read_mergedCSV(merged_dir)
+	run_NER(ner_dir, merged_df, classifiers, ner_classif_dirs)
 
-	do_NER(ner_dir, merged_df)
-
-	# Check on xml, email validity, java calls for NER extraction
+	# Check on xml, email validity, java calls for NER extraction (subprocess)
 
 	# General Function Flow:
-	#read_omitLocs
-	#read_mergedCSV
-	#do_NER
-	#process_data_NER
+	#read_omitLocs - done
+	#read_mergedCSV - done
+	#run_NER - halfway
+	#process_NER
 	#### helper funcs
 	#parse_contact_info
 	#parse_xml_ner
@@ -177,4 +209,46 @@ if __name__ == '__main__':
 	####
 	#write_output
 
+# doNER:
+
+# loop through all patents - take corresponding giStatement
+# acronym cleaning (may not need this first glance)
+# NERFC - specifices # o flines to feed NER / java call
+# if nersIN > 5000 or i = # of patent keys
+# open a new file, write to it entire array, split by /n
+# do next iteration - write the rest 
+
+# run java call on NER data - input txt file, 5000 lines/call
+# each line for patent
+
+# NER output - flagged organization + location 
+
+
+# process():
+# giStatement field -look at all contract/award #s from giStatement field
+#split lines by space, trim punc, loop through all words
+# CA152813 and HL107153
+#  This invention was made with government support under grant nos. CA152813 and HL107153 awarded by the NIH. The government has certain rights in the invention.
+
+# Federally-Sponsored Research and Development The United States 
+#Government has ownership rights in this invention. 
+#Licensing inquiries may be directed to Office of Research 
+#and Technical Applications, Space and Naval Warfare Systems 
+#Center, Pacific, Code 72120, San Diego, Calif., 92152; 
+#telephone (619)553-5118; email: ssc_pac_t2@navy.mil. 
+#Reference Navy Case No. 103081.
+
+#5023
+
+
+
+
+
+# email code line 410...
+# clean Contracts .. 
+# questions for sarah - do we need emails?
+# clarify those steps
+
+#NER processing ----> adds organiz. and loc.
+# use to create distinct orgs, distinct loc. output
 
