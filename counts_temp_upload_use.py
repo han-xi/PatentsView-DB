@@ -1,4 +1,3 @@
-*config file
 import os
 import configparser
 import sys
@@ -17,23 +16,18 @@ temporary_upload = config['DATABASE']['TEMP_UPLOAD_DB']
 
 engine = general_helpers.connect_to_db(host, username, password, new_database)
 
-*folder locations and database
-
 new_qa_loc='/user/local/airflow/PatentsView-DB/Development/QA'
 temp_upload = 'november_upload'
 
-*Counts function
 
 tables=['application',	'botanic',	'brf_sum_text',	'claim','detail_desc_text',	'draw_desc_text',	'figures',	'foreign_priority',	'foreigncitation',	'government_interest',	'ipcr',	'mainclass',	'non_inventor_applicant',	'otherreference',	'patent',	'pct_data',	'rawassignee',	'rawexaminer',	'rawinventor',	'rawlawyer',	'rawlocation',	'rel_app_text',	'subclass',	'us_term_of_grant',	'usapplicationcitation',	'uspatentcitation',	'uspc',		'usreldoc']
 new_counts = []
 description= []
 
 def temp_upload_count (temp_upload, new_qa_loc):
-    cursor = connect()
-    cursor.execute('use {}'.format(temp_upload))
+    engine.execute('use {}'.format(temp_upload))
     for table in tables:
-        cursor.execute('select count(*) from {}'.format(table))
-        count = cursor.fetchall()[0][0]
+        count = engine.execute('select count(*) from {}'.format(table))
         new_counts.append(count)
     for count in new_counts:
         if count == 0:
