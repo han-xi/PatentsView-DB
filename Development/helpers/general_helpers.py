@@ -13,7 +13,7 @@ def chunks(l,n):
     return chunk_list
 
 def connect_to_db(host, username, password, database):
-    engine = create_engine('mysql+mysqldb://{}:{}@{}/{}?charset=utf8'.format(username, password, host, database ), encoding='utf-8')
+    engine = create_engine('mysql+mysqldb://{}:{}@{}/{}?charset=utf8'.format(username, password, host, database ), encoding='utf-8', pool_size=20, max_overflow=0)
     return engine
 
 
