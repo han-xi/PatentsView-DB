@@ -3,6 +3,10 @@ import sys
 import math
 import subprocess
 import os
+from os import listdir
+import re 
+import xml.etree.ElementTree as ET
+from itertools import chain 
 #from nltk.tag import StanfordNERTagger
 #from nltk.tokenize import word_tokenize, sent_tokenize
 #from sner import NER 
@@ -124,7 +128,66 @@ def run_NER(fp, merged_df, classif, classif_dirs ):
 # Modifies: nothing
 # Effects: Process NER on data dict from merged_csvs
 # Check if uniq function definition is needed
-def process_NER(data):
+def process_NER(fp):
+	os.chdir(fp + 'stanford-ner-2017-06-09/out/')
+	print(os.getcwd())
+	ner_output = listdir(os.getcwd())
+	print(ner_output)
+	orgs_full_list = []
+	locs_full_list = []
+	for f in ner_output:
+		with open(f, "r") as output:
+			content = output.readlines()
+			for line in content: 
+				orgs = re.findall("<ORGANIZATION>[^<]+</ORGANIZATION>", line)
+				orgs_clean = [re.sub("<ORGANIZATION>", "", x) for x in orgs]
+				orgs_clean = [re.sub("</ORGANIZATION>", "", x) for x in orgs_clean]
+				
+				locs = re.findall("<LOCATION>[^<]+</LOCATION>", line)
+				locs_clean = [re.sub("<LOCATION>", "", x) for x in locs]
+				locs_clean = [re.sub("</LOCATION>", "", x) for x in locs_clean]
+				
+				orgs_full_list.append(orgs_clean)
+				locs_full_list.append(locs_clean)
+	
+
+	# flatten list of lists 
+	print(len(orgs_full_list))
+	print(len(locs_full_list))
+
+	flat_orgs = [y for x in orgs_full_list for y in x]
+	flat_locs = [y for x in locs_full_list for y in x]
+	
+	orgs_final = set(flat_orgs)
+	locs_final = set(flat_locs)
+	print(len(orgs_final))
+	print(len(locs_final))
+
+	output_path = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/"
+	with open(output_path + "/test_output/orgs.txt", "w") as p:
+		for item in orgs_final:
+			p.write(str(item) + "\n")
+
+	with open(output_path + "/test_output/locs.txt", "w") as p:
+		for item in locs_final:
+			p.write(str(item) + "\n")
+
+
+
+
+
+
+
+
+	
+	
+	
+
+	
+
+
+
+
 
 	return
 
@@ -187,8 +250,8 @@ if __name__ == '__main__':
 	
 	omitLocs_df, omitLocs = read_omitLocs(omitLocs_dir)
 	merged_df = read_mergedCSV(merged_dir)
-	run_NER(ner_dir, merged_df, classifiers, ner_classif_dirs)
-
+	#run_NER(ner_dir, merged_df, classifiers, ner_classif_dirs)
+	process_NER(ner_dir)
 	# Check on xml, email validity, java calls for NER extraction (subprocess)
 
 	# General Function Flow:
