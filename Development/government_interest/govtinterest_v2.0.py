@@ -3,8 +3,9 @@ import sys
 import math
 import subprocess
 import os
-from nltk.tag import StanfordNERTagger
-from nltk.tokenize import word_tokenize
+#from nltk.tag import StanfordNERTagger
+#from nltk.tokenize import word_tokenize, sent_tokenize
+#from sner import NER 
 # run under pl_rewrite virtualenv
 # python G:\PatentsView\cssip\PatentsView-DB\Development\government_interest\govtinterest_v2.0.py
 # Python version 3.6
@@ -73,7 +74,7 @@ def read_mergedCSV(fp):
 def run_NER(fp, merged_df, classif, classif_dirs ):
 	# loop through patents (6127)
 	patents = merged_df['patent_num'].tolist()
-	print(len(patents))
+	#print(len(patents))
 	
 	#print(patents[0:5])
 	# add acronym cleanup func later - doesn't appear to need replacement
@@ -81,15 +82,19 @@ def run_NER(fp, merged_df, classif, classif_dirs ):
 	gi_stmt_full = merged_df['gi_stmt'].tolist()
 	nerfc = 5000
 
+
 	num_files = int(math.ceil(len(gi_stmt_full) / nerfc))
 	input_files = []
-	#print(str(num_files) + 'is # of files')
+	#print(str(num_files) + ' is # of files')
+	fp = fp + 'stanford-ner-2017-06-09/'
+	os.chdir(fp)
+	print("Current working directory: " + os.getcwd())
 	# Note: Rewrite - support more than 2 files...
 	text1 = ''
 	text2 = ''
 	for num in range(0,num_files):
 		#print("now running file " + str(num))
-		with open(fp + 'in/' + str(num) + 'test.txt', 'w', encoding='utf-8') as f:
+		with open(fp + 'in/' + str(num) + '_test2.txt', 'w', encoding='utf-8') as f:
 		 	if(num == 0):
 		 		gi_stmt_str = '\n'.join(gi_stmt_full[0:nerfc])
 		 		text1 = gi_stmt_str
@@ -97,32 +102,21 @@ def run_NER(fp, merged_df, classif, classif_dirs ):
 		 		gi_stmt_str = '\n'.join(gi_stmt_full[nerfc:len(gi_stmt_full)])
 		 		text2 = gi_stmt_str
 		 	f.write(gi_stmt_str)
-		 	input_files.append(str(num) + 'test.txt')
+		 	input_files.append(str(num) + '_test2.txt')
+	
 
-	os.chdir(fp + 'stanford-ner-2017-06-09/')
-	cf_fp = fp + 'stanford-ner-2017-06-09/'
-	print(os.getcwd())
-	jar = os.getcwd()
-	for cf in classif:
-		print("now running NER on: " + cf)
-		for f in input_files:
-			print("with file: " + f )
-			cf_fp = cf_fp + cf
-			print("Classfier PATH: " + cf_fp)
-			jar_fp = jar + '/' + 'stanford-ner.jar'
-			print("stanford ner PATH: " + cf_fp)
-			st = StanfordNERTagger(cf_fp,jar_fp , encoding='utf-8')
-			tokenized = word_tokenize(text1)
-			tagged = st.tag(tokenized)
-			print(tagged)
-			# cmd_pt1 = 'java -mx500m -cp \".stanford-ner.jar;./lib/*\"" edu.stanford.nlp.ie.crf.CRFClassifier'
-			# cmd_pt2 = '-loadClassifier ' + cf
-			# cmd_pt3 = '-textFile in/' + f + ' -outputFormat inlineXML 2>> error.log'
-			# cmd_full = cmd_pt1 + ' ' + cmd_pt2 + ' ' + cmd_pt3
-			# cmdline_params = cmd_full.split()
-			# print(cmdline_params)
-			# p = subprocess.run(cmdline_params)
-			# #print("returncode: ", p.returncode)
+	for cf in range(0,len(classif)):
+		for f in input_files:	    
+			cmd_pt1 = 'java -mx500m -classpath stanford-ner.jar;lib/* edu.stanford.nlp.ie.crf.CRFClassifier'
+			cmd_pt2 = '-loadClassifier ' + './' + classif[cf]
+			cmd_pt3 = '-textFile ./in/' + f + ' -outputFormat inlineXML 2>> error.log'
+			cmd_full = cmd_pt1 + ' ' + cmd_pt2 + ' ' + cmd_pt3
+			cmdline_params = cmd_full.split()
+			print(cmdline_params)
+			with open("./out/" + classif_dirs[cf] + f, "w") as xml_out: 
+
+				subprocess.run(cmdline_params, stdout=xml_out)
+			
 	return
 
 
@@ -200,7 +194,7 @@ if __name__ == '__main__':
 	# General Function Flow:
 	#read_omitLocs - done
 	#read_mergedCSV - done
-	#run_NER - halfway
+	#run_NER - done 
 	#process_NER
 	#### helper funcs
 	#parse_contact_info
