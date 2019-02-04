@@ -5,8 +5,9 @@ import subprocess
 import os
 from os import listdir
 import re 
-import xml.etree.ElementTree as ET
+#import xml.etree.ElementTree as ET
 from itertools import chain 
+import string 
 #from nltk.tag import StanfordNERTagger
 #from nltk.tokenize import word_tokenize, sent_tokenize
 #from sner import NER 
@@ -172,23 +173,6 @@ def process_NER(fp):
 		for item in locs_final:
 			p.write(str(item) + "\n")
 
-
-
-
-
-
-
-
-	
-	
-	
-
-	
-
-
-
-
-
 	return
 
 
@@ -211,6 +195,7 @@ def parse_contact_info():
 # Modifies: nothing
 # Effects: parses XML file for orgs, locs, has_location fields
 def parse_xml_ner():
+	# done, move code here 
 	return
 
 
@@ -218,7 +203,39 @@ def parse_xml_ner():
 # Modifies: nothing
 # Effects: clean giStatement field for certain contract #s
 # Note: look at this again, right now Bethesda & SD related only
-def cleanContracts():
+def cleanContracts(data):
+	#print(data.columns.get_values())
+	gi_statements = data['gi_stmt'].tolist()
+	contracts = []
+	for gi in gi_statements:
+		
+	# [A-Za-z\d] start with alphanumeric char
+	# [A-Za-z\d-] 2nd char alphanumeric or - 1 or more # times
+	# [^\s] no spacing
+	# [\d] at least one more digit 
+	# [A-Za-z\d-]+  finish with alphanumeric char or - 1 or more times
+		#contract_nums = re.findall("[A-Za-z\d][A-Za-z\d-]+[^\s][\d][A-Za-z\d-]+", gi)
+		contract_nums = re.findall("[A-Za-z\d][A-Za-z\d-]+[^\s][\d][A-Za-z\d-]+|[A-Z\d][\d]{1,2}\s[A-Z\d]+", gi)
+	#print(contract_nums)
+	
+		#print(contract_nums)
+		contract_nums = '|'.join(contract_nums)
+		contracts.append(contract_nums)
+
+	#flat_contracts = [y for x in contracts for y in x]
+	print(len(gi_statements))
+	print(len(contracts))
+	merged_df['contracts'] = pd.Series(contracts)
+	print(merged_df.head())
+	output_path = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/"
+	with open(output_path + "/test_output/contracts.txt", "w") as p:
+		for item in contracts:
+			p.write(str(item) + "\n")
+
+
+	
+	
+
 	return 
 
 
@@ -251,14 +268,17 @@ if __name__ == '__main__':
 	omitLocs_df, omitLocs = read_omitLocs(omitLocs_dir)
 	merged_df = read_mergedCSV(merged_dir)
 	#run_NER(ner_dir, merged_df, classifiers, ner_classif_dirs)
-	process_NER(ner_dir)
-	# Check on xml, email validity, java calls for NER extraction (subprocess)
+	
+	#process_NER(ner_dir)
+	cleanContracts(merged_df)
+	
+	# Check on xml, email validity
 
 	# General Function Flow:
 	#read_omitLocs - done
 	#read_mergedCSV - done
 	#run_NER - done 
-	#process_NER
+	#process_NER - done 
 	#### helper funcs
 	#parse_contact_info
 	#parse_xml_ner
