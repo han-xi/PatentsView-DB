@@ -4,7 +4,7 @@
 #### output files: "NER_output.txt","distinctOrgs.txt", "distinctLocs.txt"
 ##################################################################
 
-# run under pl_rewrite virtualenv
+# run under pl_rewrite virtualenv anaconda
 # python G:\PatentsView\cssip\PatentsView-DB\Development\government_interest\govtinterest_v2.0.py
 
 import pandas as pd
@@ -16,7 +16,6 @@ from os import listdir
 import re 
 from itertools import chain 
 import string 
-
 
 # Requires: omitLocs.csv filepath
 # Modifies: nothing
@@ -100,6 +99,7 @@ def run_NER(fp, merged_df, classif, classif_dirs ):
 			cmd_full = cmd_pt1 + ' ' + cmd_pt2 + ' ' + cmd_pt3
 			cmdline_params = cmd_full.split()
 			print(cmdline_params)
+			
 			with open("./out/" + classif_dirs[cf] + f, "w") as xml_out: 
 
 				subprocess.run(cmdline_params, stdout=xml_out)
@@ -121,7 +121,7 @@ def process_NER(fp):
 	for f in ner_output:
 		with open(f, "r") as output:
 			content = output.readlines()
-	    	orgs_full_list, locs_full_list = parse_xml_ner(orgs_full_list, locs_full_list, content)	
+			orgs_full_list, locs_full_list = parse_xml_ner(orgs_full_list, locs_full_list, content)	
 
 	# flatten list of lists 
 	print(len(orgs_full_list))
@@ -137,6 +137,8 @@ def process_NER(fp):
 	
 	output_path = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/"
 	
+	# distinct files being written out ---- 1. check cols needed
+	# 2. save output - write out in write output function 
 	with open(output_path + "/test_output/orgs.txt", "w") as p:
 		for item in orgs_final:
 			p.write(str(item) + "\n")
@@ -147,45 +149,10 @@ def process_NER(fp):
 
 	return
 
-
 # Requires: data dict
 # Modifies: nothing
-# Effects: Writes 3 output files: 
-def write_output(data):
-	return
-
-#--------Helper Functions-------#
-
-# Requires: data dict
-# Modifies: nothing
-# Effects: checks email validity & phone #s, also performs string processing
-# (check on trimWord())
-def parse_contact_info():
-	return
-
-# Requires: data dict
-# Modifies: nothing
-# Effects: parses XML file for orgs, locs, has_location fields
-def parse_xml_ner(orgs_full, locs_full, content):
-	# done, move code here 
-	for line in content: 
-				orgs = re.findall("<ORGANIZATION>[^<]+</ORGANIZATION>", line)
-				orgs_clean = [re.sub("<ORGANIZATION>", "", x) for x in orgs]
-				orgs_clean = [re.sub("</ORGANIZATION>", "", x) for x in orgs_clean]
-				
-				locs = re.findall("<LOCATION>[^<]+</LOCATION>", line)
-				locs_clean = [re.sub("<LOCATION>", "", x) for x in locs]
-				locs_clean = [re.sub("</LOCATION>", "", x) for x in locs_clean]
-				
-				orgs_full.append(orgs_clean)
-				locs_full.append(locs_clean)
-
-	return orgs_full, locs_full
-
-
-# Requires: data dict
-# Modifies: nothing
-# Effects: clean giStatement field for certain contract #s
+# Effects: clean giStatement field for certain contract #s, return data with
+#          contracts column
 # Note: look at this again, right now Bethesda & SD related only
 def cleanContracts(data):
 	#print(data.columns.get_values())
@@ -220,22 +187,66 @@ def cleanContracts(data):
 		
 		contract_nums = '|'.join(contract_nums)
 		contracts.append(contract_nums)
+
+	# clean up california, bethesda code
+	ca_be = data['gi_stmt'].str.contains("Calif\.|Bethesda", regex=True)
+	
+	# get index of calif ones
+	idx_cabe = ca_be[ca_be].index
+	print(len(idx_cabe))
+	for idx in idx_cabe:
+		
+		#print(contracts[6046])
+		# simplify regex a little
+		contracts[idx] = re.sub("619\)553-5118\|?|619\)553-5120\|?|553-5118\|?|(619-)?553-2778\|?|92152\|?|72120\|?|20012\|?|53510\|?|D0012\|?|53560\|?|20014\|?|20892\|?", "", contracts[idx])
+	
+	
 	# create single column for contract award numbers
 	merged_df['contracts'] = pd.Series(contracts)
 	# print(len(gi_statements))
 	# print(len(contracts))
+	
 
-
-	print(merged_df.head())
+	#print(merged_df.head())
 	output_path = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/"
-	with open(output_path + "/test_output/merged_df.txt", "w") as p:
-		
+	with open (output_path + "/test_output/contracts.txt", "w") as p:
+		for item in contracts:
+			p.write(str(item) + "\n")
+	#merged_df.to_csv(output_path + "/test_output/merged_df.txt")
 
-	return 
+	
+	return merged_df
 
 
+# Requires: data dict
+# Modifies: nothing
+# Effects: Writes 3 output files: distinctLocs, distinctOrgs, nerOutput 
+def write_output(data):
+	return
 
-#--------Test Function-------#
+#--------Helper Functions-------#
+
+# Requires: data dict
+# Modifies: nothing
+# Effects: parses XML file for orgs, locs, has_location fields
+def parse_xml_ner(orgs_full, locs_full, content):
+	# done, move code here 
+	for line in content: 
+				orgs = re.findall("<ORGANIZATION>[^<]+</ORGANIZATION>", line)
+				orgs_clean = [re.sub("<ORGANIZATION>", "", x) for x in orgs]
+				orgs_clean = [re.sub("</ORGANIZATION>", "", x) for x in orgs_clean]
+				
+				locs = re.findall("<LOCATION>[^<]+</LOCATION>", line)
+				locs_clean = [re.sub("<LOCATION>", "", x) for x in locs]
+				locs_clean = [re.sub("</LOCATION>", "", x) for x in locs_clean]
+				
+				orgs_full.append(orgs_clean)
+				locs_full.append(locs_clean)
+
+	return orgs_full, locs_full
+
+
+#--------Test Functions -------#
 def test_dataframe(df, rw, col):
 	if df.shape[0] != rw:
 		print('Incorrect # of rows')
@@ -262,14 +273,14 @@ if __name__ == '__main__':
 	omitLocs_df, omitLocs = read_omitLocs(omitLocs_dir)
 	merged_df = read_mergedCSV(merged_dir)
 
-
 	#run_NER(ner_dir, merged_df, classifiers, ner_classif_dirs)
 	
 	#process_NER(ner_dir)
-	cleanContracts(merged_df)
 	
-	# next steps 
-	# Check on email, phone numbers, special california considerations
+	df_contracts = cleanContracts(merged_df)
+	
+	# next steps - write output 
+	
 
 
 
