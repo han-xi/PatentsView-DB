@@ -107,11 +107,10 @@ def run_NER(fp, merged_df, classif, classif_dirs ):
 	return
 
 
-# Requires: data dict
+# Requires: filepath, merged_df frame
 # Modifies: nothing
-# Effects: Process NER on data dict from merged_csvs
-# Check if uniq function definition is needed
-def process_NER(fp):
+# Effects: Process NER on merged_csvs
+def process_NER(fp, data):
 	os.chdir(fp + 'stanford-ner-2017-06-09/out/')
 	print(os.getcwd())
 	ner_output = listdir(os.getcwd())
@@ -135,17 +134,46 @@ def process_NER(fp):
 	print(len(orgs_final))
 	print(len(locs_final))
 	
+	# orgs final needs cleaning
+	# remove any Grant No. entries
+	# Inc, Government Contract # , Case No., Award Number
+	# add more tags, and then perform set again
+	orgs_final = [re.sub("Inc|Federal Grant.+|Government Contract.+|Case No\..+|Award Number.+|Grant Number.+|Grant No.+|Award No.+|Contract Number.+|Contract #.+|Agreement Nos|Award Number|Award N.+"
+		, "", x) for x in orgs_final]
+#[re.sub("<ORGANIZATION>|</ORGANIZATION>", "", x) for x in orgs]
+				
+
+	# # add column for orgs
+	# gi_statements = data['gi_stmt'].tolist()
+	# gi_all_orgs = []
+	# for gi in gi_statements:
+	# 	gi_orgs = []
+	# 	for org in orgs_final:
+	# 		if org in gi:
+	# 			gi_orgs.append(org)
+
+	# 	# once full org list formed for gi, join
+	# 	gi_final = '|'.join(gi_orgs)
+	# 	gi_all_orgs.append(gi_final)
+
+	# print(len(gi_all_orgs))
+	# #print(gi_all_orgs)
+	# data['orgs'] = pd.Series(gi_all_orgs)
+
+
 	output_path = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/"
-	
-	# distinct files being written out ---- 1. check cols needed
+	# with open(output_path + "/test_output/orgs_col_check.txt", "w") as z:
+	# 	for org in gi_all_orgs:
+	# 		z.write(str(org) + "\n")
+	# # distinct files being written out ---- 1. check cols needed
 	# 2. save output - write out in write output function 
-	with open(output_path + "/test_output/orgs.txt", "w") as p:
+	with open(output_path + "/test_output/orgs_clean.txt", "w") as p:
 		for item in orgs_final:
 			p.write(str(item) + "\n")
 
-	with open(output_path + "/test_output/locs.txt", "w") as p:
-		for item in locs_final:
-			p.write(str(item) + "\n")
+	# with open(output_path + "/test_output/locs.txt", "w") as p:
+	# 	for item in locs_final:
+	# 		p.write(str(item) + "\n")
 
 	return
 
@@ -191,7 +219,7 @@ def cleanContracts(data):
 	# clean up california, bethesda code
 	ca_be = data['gi_stmt'].str.contains("Calif\.|Bethesda", regex=True)
 	
-	# get index of calif ones
+	# get index of calif ones/bethesda
 	idx_cabe = ca_be[ca_be].index
 	print(len(idx_cabe))
 	for idx in idx_cabe:
@@ -212,6 +240,9 @@ def cleanContracts(data):
 	with open (output_path + "/test_output/contracts.txt", "w") as p:
 		for item in contracts:
 			p.write(str(item) + "\n")
+
+
+    
 	#merged_df.to_csv(output_path + "/test_output/merged_df.txt")
 
 	
@@ -220,8 +251,10 @@ def cleanContracts(data):
 
 # Requires: data dict
 # Modifies: nothing
-# Effects: Writes 3 output files: distinctLocs, distinctOrgs, nerOutput 
+# Effects: Writes nerOutput 
 def write_output(data):
+	
+
 	return
 
 #--------Helper Functions-------#
@@ -230,19 +263,19 @@ def write_output(data):
 # Modifies: nothing
 # Effects: parses XML file for orgs, locs, has_location fields
 def parse_xml_ner(orgs_full, locs_full, content):
-	# done, move code here 
+	
 	for line in content: 
 				orgs = re.findall("<ORGANIZATION>[^<]+</ORGANIZATION>", line)
-				orgs_clean = [re.sub("<ORGANIZATION>", "", x) for x in orgs]
-				orgs_clean = [re.sub("</ORGANIZATION>", "", x) for x in orgs_clean]
+				# combine into one line with |
+				orgs_clean = [re.sub("<ORGANIZATION>|</ORGANIZATION>", "", x) for x in orgs]
 				
 				locs = re.findall("<LOCATION>[^<]+</LOCATION>", line)
-				locs_clean = [re.sub("<LOCATION>", "", x) for x in locs]
-				locs_clean = [re.sub("</LOCATION>", "", x) for x in locs_clean]
+				# combine into one line with |
+				locs_clean = [re.sub("<LOCATION>|</LOCATION>", "", x) for x in locs]
 				
 				orgs_full.append(orgs_clean)
 				locs_full.append(locs_clean)
-
+	print("length of content" + str(len(content)))
 	return orgs_full, locs_full
 
 
@@ -275,31 +308,11 @@ if __name__ == '__main__':
 
 	#run_NER(ner_dir, merged_df, classifiers, ner_classif_dirs)
 	
-	#process_NER(ner_dir)
+	process_NER(ner_dir, merged_df)
 	
-	df_contracts = cleanContracts(merged_df)
+	#df_contracts = cleanContracts(merged_df)
 	
 	# next steps - write output 
-	
-
-
-
-
-# CA152813 and HL107153
-#  This invention was made with government support under grant nos. CA152813 and HL107153 awarded by the NIH. The government has certain rights in the invention.
-
-# Federally-Sponsored Research and Development The United States 
-#Government has ownership rights in this invention. 
-#Licensing inquiries may be directed to Office of Research 
-#and Technical Applications, Space and Naval Warfare Systems 
-#Center, Pacific, Code 72120, San Diego, Calif., 92152; 
-#telephone (619)553-5118; email: ssc_pac_t2@navy.mil. 
-#Reference Navy Case No. 103081.
-
-#5023
-
-
-
-
+	#write_output(df_contracts)
 
 
