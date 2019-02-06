@@ -38,7 +38,7 @@ def read_mergedCSV(fp):
 # Requires: NER DB filepath, dataframe
 # Modifies: nothing
 # Effects: Run NER on gi_statements from dataframe
-def run_NER(fp, txt_fp, data, classif, classif_dirs ):
+def run_NER(fp, txt_fp_in, txt_fp_out, data, classif, classif_dirs ):
 	os.chdir(fp)
 	patents = data['patent_num'].tolist()
 	
@@ -58,13 +58,26 @@ def run_NER(fp, txt_fp, data, classif, classif_dirs ):
 	idx = 0
 	# For each gi statement
 	for gi in range(0,len(gi_stmt_full)):
+		
 		# If < 5000 - add onto list 
 		if (idx <= nerfc):
 			txt_list.append(gi_stmt_full[gi])
 			idx = idx + 1
+			# case when not reached 5000, but finished with all gi_statements
+			if (gi == len(gi_stmt_full)-1):
+				with open(txt_fp_in + str(num_file) + '_file.txt', 'w', encoding='utf-8') as f:
+
+		 			gi_stmt_str = '\n'.join(txt_list)
+		 			f.write(gi_stmt_str)
+
+		 		# Save file name
+				infile_name = str(num_file) + "_file.txt"
+				input_files.append(infile_name)
+
 		# Reached limit, save to file 
 		else:
-			with open(txt_fp + str(num_file) + '_file.txt', 'w', encoding='utf-8') as f:
+			with open(txt_fp_in + str(num_file) + '_file.txt', 'w', encoding='utf-8') as f:
+		 		
 		 		gi_stmt_str = '\n'.join(txt_list)
 		 		f.write(gi_stmt_str)
 
@@ -78,9 +91,8 @@ def run_NER(fp, txt_fp, data, classif, classif_dirs ):
 			# Reset idx for next batch 5000
 			idx = 0
 
-
-	
-	# run java call for NER
+	print(input_files)
+	# Run java call for NER
 	for cf in range(0,len(classif)):
 		for f in input_files:	    
 			cmd_pt1 = 'java -mx500m -classpath stanford-ner.jar;lib/* edu.stanford.nlp.ie.crf.CRFClassifier'
@@ -90,7 +102,7 @@ def run_NER(fp, txt_fp, data, classif, classif_dirs ):
 			cmdline_params = cmd_full.split()
 			print(cmdline_params)
 			
-			with open("./out/" + classif_dirs[cf] + f, "w") as xml_out: 
+			with open(txt_fp_out + classif_dirs[cf] + f, "w") as xml_out: 
 
 				subprocess.run(cmdline_params, stdout=xml_out)
 			
@@ -100,9 +112,8 @@ def run_NER(fp, txt_fp, data, classif, classif_dirs ):
 # Requires: filepath, merged_df frame
 # Modifies: nothing
 # Effects: Process NER on merged_csvs, returns orgs list, locs list
-def process_NER(fp, data):
-	
-	
+def process_NER(txt_fp_out, data):
+	os.chdir(txt_fp_out)
 	ner_output = listdir(os.getcwd())
 	print(ner_output)
 	orgs_full_list = []
@@ -112,30 +123,25 @@ def process_NER(fp, data):
 			content = output.readlines()
 			orgs_full_list, locs_full_list = parse_xml_ner(orgs_full_list, locs_full_list, content)	
 
-	# flatten list of lists 
-	print(len(orgs_full_list))
-	print(len(locs_full_list))
-
+	# Flatten list of lists 
 	flat_orgs = [y for x in orgs_full_list for y in x]
 	flat_locs = [y for x in locs_full_list for y in x]
 	
 	orgs_final = set(flat_orgs)
 	locs_final = set(flat_locs)
-	print(len(orgs_final))
-	print(len(locs_final))
-	
+
 	return orgs_final, locs_final
 
 # Requires: filepath, merged_df frame
 # Modifies: nothing
 # Effects: Process NER on merged_csvs, returns orgs list, locs list
 def add_cols(data, orgs, locs):
-		# orgs final needs cleaning
+	# Clean organizations
 	orgs_final = clean_orgs(orgs)
 	
 	gi_statements = data['gi_stmt'].tolist()
 	
-	# add column for orgs
+	# Add orgs column
 	gi_all_orgs = []
 	for gi in gi_statements:
 		gi_orgs = []
@@ -143,19 +149,19 @@ def add_cols(data, orgs, locs):
 			if org in gi:
 				gi_orgs.append(org)
 
-		# once full org list formed for gi, join
+		# Once full org list formed for gi, join
 		gi_final = '|'.join(gi_orgs)		
 		gi_all_orgs.append(gi_final)
 
-	print(len(gi_all_orgs))
+	
 	gi_all_orgs = [x.lstrip('|') for x in gi_all_orgs]
 	data['orgs'] = pd.Series(gi_all_orgs)
 
 
-	# add column for contracts
+	# Extract and clean Contract Numbers
 	contracts = clean_contracts(data, gi_statements)
 	
-
+	# Add contracts column for contracts
 	data['contracts'] = pd.Series(contracts)
 
 	return data, orgs_final
@@ -165,9 +171,10 @@ def add_cols(data, orgs, locs):
 # Effects: Writes nerOutput file 
 def write_output(output_fp,data, orgs):
 
-	data.to_csv(output_fp + "NER_output.csv")
+	# Write out extracted NER Output
+	data.to_csv(output_fp + "NER_output.csv", index=False)
 
-	# write out distinct organizations
+	# Write out distinct organizations
 	with open(output_fp + "distinct_orgs.txt", "w") as p:
 		for item in orgs_final:
 			p.write(str(item) + "\n")
@@ -213,10 +220,11 @@ def clean_orgs(orgs):
 	orgs = [x.lstrip() for x in orgs]
 	orgs = [x.rstrip() for x in orgs]
 
+	# Remove Dups
 	orgs = set(orgs)
 
-	# additional general fields to remove
-	to_remove = ["national","National","National Science", "RR","research", "Research","US government", "U.S. Government", "US Government", "United","United States Government", "United States Department","United Stated", "United States", "U.S. Department","U.S.C", "U.S.C", "Defense", "Merit" ,"Government", "U.S.", "USA", "s", "Department"]
+	# Additional general fields to remove
+	to_remove = ["national","National","National Science", "RR","National Institute of","research", "Research","US government", "U.S. Government", "US Government", "United","United States Government", "United States Department","United Stated", "United States", "U.S. Department","U.S.C", "U.S.C", "Defense", "Merit" ,"Government", "U.S.", "USA", "s", "Department"]
 	orgs = [x for x in orgs if x not in to_remove]
 	
 	return orgs
@@ -263,7 +271,7 @@ def clean_contracts(data, gi_statements):
 	
 	# Get index of calif./bethesda
 	idx_cabe = ca_be[ca_be].index
-	print(len(idx_cabe))
+	
 	for idx in idx_cabe:
 
 		contracts[idx] = re.sub("619\)553-5118\|?|619\)553-5120\|?|553-5118\|?|(619-)?553-2778\|?|92152\|?|72120\|?|20012\|?|53510\|?|D0012\|?|53560\|?|20014\|?|20892\|?", "", contracts[idx])
@@ -316,7 +324,7 @@ if __name__ == '__main__':
 	merged_dir = 'D:/DataBaseUpdate/2018_Nov/contract_award_patch/merged_csvs.csv'
 	ner_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/"
 	ner_txt_indir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/in/"
-	ner_txt_outdir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/out_final"
+	ner_txt_outdir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/out_final/"
 	classifiers = ['classifiers/english.all.3class.distsim.crf.ser.gz', 'classifiers/english.conll.4class.distsim.crf.ser.gz', 'classifiers/english.muc.7class.distsim.crf.ser.gz']
 	ner_classif_dirs = ['out-3class', 'out-4class', 'out-7class']
 
@@ -326,7 +334,7 @@ if __name__ == '__main__':
 	merged_df = read_mergedCSV(merged_dir)
 
 	# 2. run NER
-	run_NER(ner_dir, ner_txt_indir, merged_df, classifiers, ner_classif_dirs)
+	run_NER(ner_dir, ner_txt_indir, ner_txt_outdir,merged_df, classifiers, ner_classif_dirs)
 	
 	# 3. process NER output
 	orgs_list, locs_list = process_NER(ner_txt_outdir, merged_df)
