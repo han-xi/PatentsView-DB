@@ -1,5 +1,5 @@
 ##################################################################
-#### This file is a re-write of govtInterest_v1.0.pl - with locations
+#### This file is a re-write of govtInterest_v1.0.pl
 #### input files: merged csvs, NER, omitLocs
 #### output files: "NER_output.txt","distinctOrgs.txt"
 ##################################################################
@@ -23,13 +23,9 @@ import string
 # Effects: read in mergedcsvs file, return dataframe
 def read_mergedCSV(fp):
 	print("Reading in mergedcsvs.csv from: " + fp + 'mergedcsvs.csv')
-	try: 
-		merged_df = pd.read_csv(fp, header=None, encoding="ISO-8859-1")
-	except:
-		print("Error reading in file, check specified filepath")
 	
-	test_dataframe(merged_df, 6127, 4)
-	
+	merged_df = pd.read_csv(fp, header=None, encoding="ISO-8859-1")
+		
 	# Set column headers
 	merged_df.columns = ['patent_num','twin_arch','gi_title', 'gi_stmt']
 	
@@ -40,7 +36,6 @@ def read_mergedCSV(fp):
 # Effects: Run NER on gi_statements from dataframe
 def run_NER(fp, txt_fp_in, txt_fp_out, data, classif, classif_dirs ):
 	os.chdir(fp)
-	patents = data['patent_num'].tolist()
 	
 	gi_stmt_full = data['gi_stmt'].tolist()
 	
@@ -50,46 +45,21 @@ def run_NER(fp, txt_fp_in, txt_fp_out, data, classif, classif_dirs ):
 	# Estimate # of files for all gi_statements to process
 	num_files = int(math.ceil(len(gi_stmt_full) / nerfc))
 	print("Number of input files needed for NER: " + str(num_files))
+	
 	# Store name of input files for NER call
 	input_files = []
-	# Note: Support more than 2 files
-	txt_list = []
-	num_file = 0
-	idx = 0
-	# For each gi statement
-	for gi in range(0,len(gi_stmt_full)):
-		
-		# If < 5000 - add onto list 
-		if (idx <= nerfc):
-			txt_list.append(gi_stmt_full[gi])
-			idx = idx + 1
-			# case when not reached 5000, but finished with all gi_statements
-			if (gi == len(gi_stmt_full)-1):
-				with open(txt_fp_in + str(num_file) + '_file.txt', 'w', encoding='utf-8') as f:
 
-		 			gi_stmt_str = '\n'.join(txt_list)
+	# Chunk GI statements by nerfc limit
+	gi_chunked = chunks(gi_stmt_full, nerfc)
+	
+	for item in range(0, len(gi_chunked)):
+		with open(txt_fp_in + str(item) + '_file.txt', 'w', encoding='utf-8') as f:
+		 			gi_stmt_str = '\n'.join(gi_chunked[item])
 		 			f.write(gi_stmt_str)
 
-		 		# Save file name
-				infile_name = str(num_file) + "_file.txt"
-				input_files.append(infile_name)
-
-		# Reached limit, save to file 
-		else:
-			with open(txt_fp_in + str(num_file) + '_file.txt', 'w', encoding='utf-8') as f:
-		 		
-		 		gi_stmt_str = '\n'.join(txt_list)
-		 		f.write(gi_stmt_str)
-
-		 	# Save file name
-			infile_name = str(num_file) + "_file.txt"
-			input_files.append(infile_name)
-		 	# Move onto next file
-			num_file = num_file + 1
-			# Empty txt_string for next batch
-			txt_list = []
-			# Reset idx for next batch 5000
-			idx = 0
+		# Save file name
+		infile_name = str(item) + "_file.txt"
+		input_files.append(infile_name)
 
 	
 	# Run java call for NER
@@ -117,25 +87,23 @@ def process_NER(txt_fp_out, data):
 	ner_output = listdir(os.getcwd())
 	print(ner_output)
 	orgs_full_list = []
-	locs_full_list = []
+
 	for f in ner_output:
 		with open(f, "r") as output:
 			content = output.readlines()
-			orgs_full_list, locs_full_list = parse_xml_ner(orgs_full_list, locs_full_list, content)	
+			orgs_full_list = parse_xml_ner(orgs_full_list, content)	
 
 	# Flatten list of lists 
 	flat_orgs = [y for x in orgs_full_list for y in x]
-	flat_locs = [y for x in locs_full_list for y in x]
-	
 	orgs_final = set(flat_orgs)
-	locs_final = set(flat_locs)
 
-	return orgs_final, locs_final
+
+	return orgs_final
 
 # Requires: filepath, merged_df frame
 # Modifies: nothing
 # Effects: Process NER on merged_csvs, returns orgs list, locs list
-def add_cols(data, orgs, locs):
+def add_cols(data, orgs):
 
 	print("Cleaning and Adding Columns...")
 	# Clean organizations
@@ -185,6 +153,14 @@ def write_output(output_fp,data, orgs):
 	return
 
 #--------Helper Functions-------#
+# From Sarah 
+def chunks(l,n):
+    '''Yield successive n-sized chunks from l. Useful for multi-processing'''
+    chunk_list =[]
+    for i in range(0, len(l), n):
+        chunk_list.append(l[i:i + n])
+    return chunk_list
+
 # Requires: organizations list
 # Modifies: organizations list
 # Effects: clean organizations
@@ -287,19 +263,15 @@ def clean_contracts(data, gi_statements):
 # Requires: organizations list, locations list, content
 # Modifies: nothing
 # Effects: parses XML file for orgs, locs
-def parse_xml_ner(orgs_full, locs_full, content):
+def parse_xml_ner(orgs_full, content):
 	
 	for line in content: 
 				orgs = re.findall("<ORGANIZATION>[^<]+</ORGANIZATION>", line)
 				orgs_clean = [re.sub("<ORGANIZATION>|</ORGANIZATION>", "", x) for x in orgs]
-				
-				locs = re.findall("<LOCATION>[^<]+</LOCATION>", line)
-				locs_clean = [re.sub("<LOCATION>|</LOCATION>", "", x) for x in locs]
-				
 				orgs_full.append(orgs_clean)
-				locs_full.append(locs_clean)
 
-	return orgs_full, locs_full
+
+	return orgs_full
 
 
 #--------Test Functions -------#
@@ -322,7 +294,6 @@ if __name__ == '__main__':
 	print("Running file.......")
 	
 	# Set up vars + directories
-	#omitLocs_dir = 'D:/DataBaseUpdate/2018_Nov/contract_award_patch/'
 	merged_dir = 'D:/DataBaseUpdate/2018_Nov/contract_award_patch/merged_csvs.csv'
 	ner_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/"
 	ner_txt_indir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/in/"
@@ -339,10 +310,10 @@ if __name__ == '__main__':
 	run_NER(ner_dir, ner_txt_indir, ner_txt_outdir,merged_df, classifiers, ner_classif_dirs)
 	
 	# 3. process NER output
-	orgs_list, locs_list = process_NER(ner_txt_outdir, merged_df)
+	orgs_list = process_NER(ner_txt_outdir, merged_df)
 	
 	# 4. add extracted organizations and contract numbers
-	df_final,orgs_final = add_cols(merged_df, orgs_list, locs_list)
+	df_final,orgs_final = add_cols(merged_df, orgs_list)
 	
 	# 5. write output file
 	write_output(final_output_dir,df_final,orgs_final)
