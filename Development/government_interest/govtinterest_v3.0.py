@@ -5,7 +5,7 @@
 ##################################################################
 
 # run under pl_rewrite virtualenv anaconda
-# python G:\PatentsView\cssip\PatentsView-DB\Development\government_interest\govtinterest_v2.0.py
+# python G:\PatentsView\cssip\PatentsView-DB\Development\government_interest\govtinterest_v3.0.py
 
 import pandas as pd
 import sys
@@ -17,77 +17,68 @@ import re
 from itertools import chain 
 import string 
 
-# Requires: omitLocs.csv filepath
-# Modifies: nothing
-# Effects: read in omitLocs file and return with data dict  
-def read_omitLocs(fp):
-	print("Reading in omitLocs.csv from: " + fp)
-	try: 
-		omitLocs_df = pd.read_csv(fp + 'omitLocs.csv')
-	except:
-		print("Error reading in file, check specified filepath")
-	
-	test_dataframe(omitLocs_df, 482, 3)
-	
-	omitted_data = {}
-
-	for index, row in omitLocs_df.iterrows():
-		if row['Omit'] == 1:
-			omitted_data[row['Location']] = row['Omit']
-
-	return  omitLocs_df, omitted_data
 
 # Requires: mergedcsvs.csv filepath
 # Modifies: nothing
-# Effects: read in mergedcsvs file, return data dict. + dataframe
+# Effects: read in mergedcsvs file, return dataframe
 def read_mergedCSV(fp):
 	print("Reading in mergedcsvs.csv from: " + fp + 'mergedcsvs.csv')
 	try: 
-		merged_df = pd.read_csv(fp, header=None, encoding="ISO-8859-1") #+ 'mergedcsvs.csv')
+		merged_df = pd.read_csv(fp, header=None, encoding="ISO-8859-1")
 	except:
 		print("Error reading in file, check specified filepath")
 	
 	test_dataframe(merged_df, 6127, 4)
 	
-	# set column headers
-	merged_df.columns = ['patent_num','twin_arch','gi_title', 'gi_stmt' ]
+	# Set column headers
+	merged_df.columns = ['patent_num','twin_arch','gi_title', 'gi_stmt']
 	
-	#merged_df.to_csv("G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/output/test.csv")
-
 	return merged_df 
 
-# Requires: NER DataBase filepath, input
+# Requires: NER DB filepath, dataframe
 # Modifies: nothing
-# Effects: Run NER
-def run_NER(fp, merged_df, classif, classif_dirs ):
+# Effects: Run NER on gi_statements from dataframe
+def run_NER(fp, txt_fp, data, classif, classif_dirs ):
+	os.chdir(fp)
+	patents = data['patent_num'].tolist()
 	
-	patents = merged_df['patent_num'].tolist()
+	gi_stmt_full = data['gi_stmt'].tolist()
 	
-	# add acronym cleanup func later - doesn't appear to need replacement
-	
-	gi_stmt_full = merged_df['gi_stmt'].tolist()
+	# Limit to how many lines java call can read for NER
 	nerfc = 5000
 
+	# Estimate # of files for all gi_statements to process
 	num_files = int(math.ceil(len(gi_stmt_full) / nerfc))
+	print("Number of input files needed for NER: " + str(num_files))
+	# Store name of input files for NER call
 	input_files = []
-	
-	fp = fp + 'stanford-ner-2017-06-09/'
-	os.chdir(fp)
-	print("Current working directory: " + os.getcwd())
-	# Note: Rewrite - support more than 2 files?
-	text1 = ''
-	text2 = ''
-	for num in range(0,num_files):
-		
-		with open(fp + 'in/' + str(num) + '_test2.txt', 'w', encoding='utf-8') as f:
-		 	if(num == 0):
-		 		gi_stmt_str = '\n'.join(gi_stmt_full[0:nerfc])
-		 		text1 = gi_stmt_str
-		 	else:
-		 		gi_stmt_str = '\n'.join(gi_stmt_full[nerfc:len(gi_stmt_full)])
-		 		text2 = gi_stmt_str
-		 	f.write(gi_stmt_str)
-		 	input_files.append(str(num) + '_test2.txt')
+	# Note: Support more than 2 files
+	txt_list = []
+	num_file = 0
+	idx = 0
+	# For each gi statement
+	for gi in range(0,len(gi_stmt_full)):
+		# If < 5000 - add onto list 
+		if (idx <= nerfc):
+			txt_list.append(gi_stmt_full[gi])
+			idx = idx + 1
+		# Reached limit, save to file 
+		else:
+			with open(txt_fp + str(num_file) + '_file.txt', 'w', encoding='utf-8') as f:
+		 		gi_stmt_str = '\n'.join(txt_list)
+		 		f.write(gi_stmt_str)
+
+		 	# Save file name
+			infile_name = str(num_file) + "_file.txt"
+			input_files.append(infile_name)
+		 	# Move onto next file
+			num_file = num_file + 1
+			# Empty txt_string for next batch
+			txt_list = []
+			# Reset idx for next batch 5000
+			idx = 0
+
+
 	
 	# run java call for NER
 	for cf in range(0,len(classif)):
@@ -110,8 +101,8 @@ def run_NER(fp, merged_df, classif, classif_dirs ):
 # Modifies: nothing
 # Effects: Process NER on merged_csvs, returns orgs list, locs list
 def process_NER(fp, data):
-	os.chdir(fp + 'stanford-ner-2017-06-09/out/')
-	print(os.getcwd())
+	
+	
 	ner_output = listdir(os.getcwd())
 	print(ner_output)
 	orgs_full_list = []
@@ -164,25 +155,20 @@ def add_cols(data, orgs, locs):
 	# add column for contracts
 	contracts = clean_contracts(data, gi_statements)
 	
-	final_output_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/test_output/"
-	print("Final length of contracts" + str(len(contracts)))
 
 	data['contracts'] = pd.Series(contracts)
-	data.to_csv(final_output_dir + "contracts_testing.txt", index=False)
-	# print(len(gi_statements))
-	# print(len(contracts))
-	 
+
 	return data, orgs_final
 
 # Requires: data dict
 # Modifies: nothing
 # Effects: Writes nerOutput file 
 def write_output(output_fp,data, orgs):
-	
-	data.to_csv(output_fp + "final_output.csv")
+
+	data.to_csv(output_fp + "NER_output.csv")
 
 	# write out distinct organizations
-	with open(output_fp + "orgs_clean.txt", "w") as p:
+	with open(output_fp + "distinct_orgs.txt", "w") as p:
 		for item in orgs_final:
 			p.write(str(item) + "\n")
 	
@@ -190,23 +176,26 @@ def write_output(output_fp,data, orgs):
 	return
 
 #--------Helper Functions-------#
+# Requires: organizations list
+# Modifies: organizations list
+# Effects: clean organizations
 def clean_orgs(orgs):
 	
-	# strip leading and trailing whitespace
+	# Strip whitespace
 	orgs = [x.lstrip() for x in orgs]
 	orgs = [x.rstrip() for x in orgs]
 
-	# Grant-related
+	# Grant-related cleaning
 	orgs = [re.sub("Federal\sGrant.+|Grant\sNumber.+|Grant\sNo\.?.+|Grant\s#.+|(and)?\s?Grant", "", x) for x in orgs]
 
-	# Contract/Case related
+	# Contract/Case related cleaning
 	orgs = [re.sub("Government\sContract.+|Case?\s(Number)?|Case|Subcontract.+|and\s(Contract)?|(and)?\s?Contract\sNos?\.?.+|Contract\s[A-Z,\d,\-,a-z].+[\d].+|Case\sNo\.?.+|Contract\sNumber.+|Contract\s#.+|Order\sNo|[C,c]ontract\/"
 		, "", x) for x in orgs]
 	
-	# Award/Agreement related
+	# Award/Agreement related cleaning
 	orgs = [re.sub("Award\sNumber.+|Award|Award\sNos?\.?.+|Agreement\sNos?\.?|Agreement\sNumbers.+|Award\s[A-Z].+[\d].+\sand|Award\s[A-Z,\d,\-,/]{10,30}", "", x) for x in orgs]
 	
-	# Misc cleaning
+	# Misc. cleaning
 	orgs = [re.sub("Cooperative\sAgreement.+", "Cooperative Agreement", x) for x in orgs]
 	orgs = [re.sub("Agreement\sNCRID-08-317-00", "Agreement", x) for x in orgs]
 	orgs = [re.sub("Energy\sContract.+", "Energy", x) for x in orgs]
@@ -226,18 +215,9 @@ def clean_orgs(orgs):
 
 	orgs = set(orgs)
 
-	print(str(len(orgs)) + "BEFoRE REmoving us. national, etc.")
-
+	# additional general fields to remove
 	to_remove = ["national","National","National Science", "RR","research", "Research","US government", "U.S. Government", "US Government", "United","United States Government", "United States Department","United Stated", "United States", "U.S. Department","U.S.C", "U.S.C", "Defense", "Merit" ,"Government", "U.S.", "USA", "s", "Department"]
 	orgs = [x for x in orgs if x not in to_remove]
-
-	print(str(len(orgs)) + "AFTER REmoving us. national, etc.")
-	final_output_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/test_output/"
-	
-	with open(final_output_dir + "orgs_clean_simple.txt", "w") as p:
-		for item in orgs:
-			p.write(str(item) + "\n")
-
 	
 	return orgs
 
@@ -249,8 +229,7 @@ def clean_orgs(orgs):
 def clean_contracts(data, gi_statements):
 
 	contracts = []
-	# STEP 1. Public Law - Don't need contract awards - make thesenempty
-	# all law gi statements have "Public Law" in them
+	# STEP 1. Public Law - Don't need contract awards 
 	contract_nums = data['gi_stmt'].str.contains("Public Law")
 	
 	# get index of law ones
@@ -279,10 +258,10 @@ def clean_contracts(data, gi_statements):
 		contract_nums = '|'.join(contract_nums)
 		contracts.append(contract_nums)
 
-	# clean up california, bethesda code
+	# Clean up calif./bethesda codes
 	ca_be = data['gi_stmt'].str.contains("Calif\.|Bethesda", regex=True)
 	
-	# get index of calif ones/bethesda
+	# Get index of calif./bethesda
 	idx_cabe = ca_be[ca_be].index
 	print(len(idx_cabe))
 	for idx in idx_cabe:
@@ -295,27 +274,28 @@ def clean_contracts(data, gi_statements):
 	return contracts
 
 
-# Requires: data dict
+# Requires: organizations list, locations list, content
 # Modifies: nothing
-# Effects: parses XML file for orgs, locs, has_location fields
+# Effects: parses XML file for orgs, locs
 def parse_xml_ner(orgs_full, locs_full, content):
 	
 	for line in content: 
 				orgs = re.findall("<ORGANIZATION>[^<]+</ORGANIZATION>", line)
-				# combine into one line with |
 				orgs_clean = [re.sub("<ORGANIZATION>|</ORGANIZATION>", "", x) for x in orgs]
 				
 				locs = re.findall("<LOCATION>[^<]+</LOCATION>", line)
-				# combine into one line with |
 				locs_clean = [re.sub("<LOCATION>|</LOCATION>", "", x) for x in locs]
 				
 				orgs_full.append(orgs_clean)
 				locs_full.append(locs_clean)
-	print("length of content" + str(len(content)))
+
 	return orgs_full, locs_full
 
 
 #--------Test Functions -------#
+# Requires: dataframe, # of rows, # of cols
+# Modifies: nothing
+# Effects: checks if dataframe has been read in correctly
 def test_dataframe(df, rw, col):
 	if df.shape[0] != rw:
 		print('Incorrect # of rows')
@@ -329,27 +309,32 @@ def test_dataframe(df, rw, col):
 
 if __name__ == '__main__':
 
-	print("Hello World")
-
-	# set up vars + directories
+	print("Running file.......")
+	
+	# Set up vars + directories
 	omitLocs_dir = 'D:/DataBaseUpdate/2018_Nov/contract_award_patch/'
 	merged_dir = 'D:/DataBaseUpdate/2018_Nov/contract_award_patch/merged_csvs.csv'
-	ner_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/"
-	
+	ner_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/"
+	ner_txt_indir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/in/"
+	ner_txt_outdir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/NER/stanford-ner-2017-06-09/out_final"
 	classifiers = ['classifiers/english.all.3class.distsim.crf.ser.gz', 'classifiers/english.conll.4class.distsim.crf.ser.gz', 'classifiers/english.muc.7class.distsim.crf.ser.gz']
 	ner_classif_dirs = ['out-3class', 'out-4class', 'out-7class']
 
 	final_output_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/test_output/"
 
-	omitLocs_df, omitLocs = read_omitLocs(omitLocs_dir)
+	# 1. Read in the input file
 	merged_df = read_mergedCSV(merged_dir)
 
-	#run_NER(ner_dir, merged_df, classifiers, ner_classif_dirs)
+	# 2. run NER
+	run_NER(ner_dir, ner_txt_indir, merged_df, classifiers, ner_classif_dirs)
 	
-	orgs_list, locs_list = process_NER(ner_dir, merged_df)
+	# 3. process NER output
+	orgs_list, locs_list = process_NER(ner_txt_outdir, merged_df)
 	
+	# 4. add extracted organizations and contract numbers
 	df_final,orgs_final = add_cols(merged_df, orgs_list, locs_list)
 	
+	# 5. write output file
 	write_output(final_output_dir,df_final,orgs_final)
 	
 
