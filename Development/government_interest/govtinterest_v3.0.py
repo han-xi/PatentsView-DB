@@ -91,7 +91,7 @@ def run_NER(fp, txt_fp_in, txt_fp_out, data, classif, classif_dirs ):
 			# Reset idx for next batch 5000
 			idx = 0
 
-	print(input_files)
+	
 	# Run java call for NER
 	for cf in range(0,len(classif)):
 		for f in input_files:	    
@@ -136,6 +136,8 @@ def process_NER(txt_fp_out, data):
 # Modifies: nothing
 # Effects: Process NER on merged_csvs, returns orgs list, locs list
 def add_cols(data, orgs, locs):
+
+	print("Cleaning and Adding Columns...")
 	# Clean organizations
 	orgs_final = clean_orgs(orgs)
 	
@@ -170,16 +172,16 @@ def add_cols(data, orgs, locs):
 # Modifies: nothing
 # Effects: Writes nerOutput file 
 def write_output(output_fp,data, orgs):
-
+	print("Writing Output...")
 	# Write out extracted NER Output
 	data.to_csv(output_fp + "NER_output.csv", index=False)
 
 	# Write out distinct organizations
+	orgs.sort()
 	with open(output_fp + "distinct_orgs.txt", "w") as p:
-		for item in orgs_final:
+		for item in orgs:
 			p.write(str(item) + "\n")
 	
-
 	return
 
 #--------Helper Functions-------#
@@ -345,5 +347,5 @@ if __name__ == '__main__':
 	# 5. write output file
 	write_output(final_output_dir,df_final,orgs_final)
 	
-
+	print("Done!")
 
