@@ -171,14 +171,14 @@ def clean_orgs(orgs):
 	orgs = [x.rstrip() for x in orgs]
 
 	# Grant-related cleaning
-	orgs = [re.sub("Federal\sGrant.+|Grant\sNumber.+|Grant\sNo\.?.+|Grant\s#.+|(and)?\s?Grant", "", x) for x in orgs]
+	orgs = [re.sub("Federally[\-,\s]Sponsored\sResearch(\sThis)?|Federal\s(Contract|Government|Government Contract)|(Federal\sGrant|Grant\sNumber).+|Grant\sNo\.?.+|Grant\s#.+|(and)?\s?Grant", "", x) for x in orgs]
 
 	# Contract/Case related cleaning
-	orgs = [re.sub("Government\sContract.+|Case?\s(Number)?|Case|Subcontract.+|and\s(Contract)?|(and)?\s?Contract\sNos?\.?.+|Contract\s[A-Z,\d,\-,a-z].+[\d].+|Case\sNo\.?.+|Contract\sNumber.+|Contract\s#.+|Order\sNo|[C,c]ontract\/"
+	orgs = [re.sub("Government\sContract.+|Case?\s(Number)?|Subcontract.+|and\s(Contract)|(and)?\s?Contract\sNos?\.?.+|Contract\s[A-Z,\d,\-,a-z].+[\d].+|Case\sNo\.?.+|(Contract\sNumber|Contract\s#).+|Order\sNo|[C,c]ontract\/|Case"
 		, "", x) for x in orgs]
 	
 	# Award/Agreement related cleaning
-	orgs = [re.sub("Award\sNumber.+|Award|Award\sNos?\.?.+|Agreement\sNos?\.?|Agreement\sNumbers.+|Award\s[A-Z].+[\d].+\sand|Award\s[A-Z,\d,\-,/]{10,30}", "", x) for x in orgs]
+	orgs = [re.sub("(Award|Agreement)\sNumbers?.+|(Award|Agreement)\sNos?\.?.+|Award\s[A-Z].+[\d].+\sand|Award\s[A-Z,\d,\-,/]{10,30}|Award", "", x) for x in orgs]
 	
 	# Misc. cleaning
 	orgs = [re.sub("Cooperative\sAgreement.+", "Cooperative Agreement", x) for x in orgs]
@@ -189,8 +189,8 @@ def clean_orgs(orgs):
 	orgs = [re.sub("YFA.+", "YFA", x) for x in orgs]
 	orgs = [re.sub("Work\sUnit.+", "Work Unit", x) for x in orgs]
 	orgs = [re.sub("Training\sNumber.+|\?|\)|\(|,\.", "", x) for x in orgs]
-	orgs = [re.sub("[A-Z,\d,\-]{10,30}|Agreement\|Number?.+|And Contract|And$","", x) for x in orgs]
-	orgs = [re.sub("\sNos?\.?$|\]|\[|no\.|NS.+|&|;$|\s1$|#$|'|[#,A-Z][a-z,\d,A-Z][a-z\d][\d]{3,10}", "", x) for x in orgs]
+	orgs = [re.sub("[A-Z,\d,\-]{10,30}|Agreement\|(Number)?.+|And Contract|And$","", x) for x in orgs]
+	orgs = [re.sub("\sNos?\.?$|\]|\[|no\.|NS.+|&|;$|\s1$|#|'|[#,A-Z][a-z,\d,A-Z][a-z\d][\d]{3,10}", "", x) for x in orgs]
 	orgs = [re.sub("Applications?\sI[dD]?.+|Project\s#|Project\sNumber.+|Prime\sContract|Merit\sReview?.+|Merit\sAward", "", x) for x in orgs]
 	orgs = [re.sub("Goverment|Government\sSupport\s?(under)?|(NIH|NHI)\s1|Health 1R43|U01", "", x) for x in orgs]
 	orgs = [re.sub("Foundation\sNumber|Foundation\s[\d]{5,15}|U01|R01|P\.O\.|Numbers?", "", x) for x in orgs]
@@ -202,8 +202,11 @@ def clean_orgs(orgs):
 	orgs = set(orgs)
 
 	# Additional general fields to remove
-	to_remove = ["national","National","National Science", "RR","National Institute of","research", "Research","US government", "U.S. Government", "US Government", "United","United States Government", "United States Department","United Stated", "United States", "U.S. Department","U.S.C", "U.S.C", "Defense", "Merit" ,"Government", "U.S.", "USA", "s", "Department"]
+	to_remove = ["national","National","National Science","U.S.C.", "Contract", "Invention", "Cooperative","The Department", "The United States Government" , "National Institute", "National Institutes","Federal", "RR","National Institute of","research", "Research","US government", "U.S. Government", "US Government", "United","United States Government", "United States Department","United Stated", "United States", "U.S. Department","U.S.C", "U.S.C", "Defense", "Merit" ,"Government", "U.S.", "USA", "s", "Department"]
 	orgs = [x for x in orgs if x not in to_remove]
+	
+
+	final_output_dir = "G:/PatentsView/cssip/PatentsView-DB/Development/government_interest/test_output/"
 	
 	return orgs
 
@@ -221,10 +224,9 @@ def clean_contracts(data, gi_statements):
 	# get index of law ones
 	law_stmts = contract_nums[contract_nums].index
 	law_stmts = law_stmts.tolist()
+	save_file = []
 
-	for law in law_stmts:
-		gi_statements[law] = ""
-
+	
 	for gi in gi_statements:
 	# STEP 2. Extract contract awards
 	############################# Expression 1
@@ -244,6 +246,10 @@ def clean_contracts(data, gi_statements):
 		contract_nums = '|'.join(contract_nums)
 		contracts.append(contract_nums)
 
+	for law_idx in law_stmts:
+		contracts[law_idx] = re.sub("((96|85)-\d{3}|USC\s\d{3}|20\d{3}|111-\d{3})\|?", "", contracts[law_idx])
+		save_file.append(contracts[law_idx])
+	
 	# Clean up calif./bethesda codes
 	ca_be = data['gi_stmt'].str.contains("Calif\.|Bethesda", regex=True)
 	
