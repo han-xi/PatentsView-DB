@@ -202,7 +202,7 @@ def clean_orgs(orgs):
 	orgs = set(orgs)
 
 	# Additional general fields to remove
-	to_remove = ["national","National","National Science","U.S.C.", "Contract", "Invention", "Cooperative","The Department", "The United States Government" , "National Institute", "National Institutes","Federal", "RR","National Institute of","research", "Research","US government", "U.S. Government", "US Government", "United","United States Government", "United States Department","United Stated", "United States", "U.S. Department","U.S.C", "U.S.C", "Defense", "Merit" ,"Government", "U.S.", "USA", "s", "Department"]
+	to_remove = ["national","National","National Science", "Agency","U.S.C.", "Contract", "Invention", "Cooperative","The Department", "The United States Government" , "National Institute", "National Institutes","Federal", "RR","National Institute of","research", "Research","US government", "U.S. Government", "US Government", "United","United States Government", "United States Department","United Stated", "United States", "U.S. Department","U.S.C", "U.S.C", "Defense", "Merit" ,"Government", "U.S.", "USA", "s", "Department"]
 	orgs = [x for x in orgs if x not in to_remove]
 	
 
