@@ -211,7 +211,7 @@ def line_search(pat, lines_list):
     for line in lines_list:
         pat_search = re.search(pat, line)
         if pat_search:
-            print(counter)
+            return counter
         counter += 1
 
-
+    return -1
