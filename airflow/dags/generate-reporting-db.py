@@ -277,6 +277,22 @@ rep_tbl_2 = SQLTemplatedPythonOperator(
     params=database_name_config
 )
 
+
+##################################################################
+# TODO: DETAIL_DESC_TEXT script... will need PythonOperator as defined task
+# will need to import detail_desc_text.py script at top ^
+# call functions in callable sectionnn
+# detail_desc_text_solr = PythonOperator(
+#     task_id='Detail_Desc_Text_solr',
+#     provide_context=True,
+#     python_callable=print_context,
+#     dag=dag,
+# )
+
+# This will run after uspc - needs reporting_db version of patent to work
+##################################################################
+
+
 govt_interest.set_upstream(db_creation)
 claims.set_upstream(db_creation)
 id_mappings.set_upstream(db_creation)
