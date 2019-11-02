@@ -51,8 +51,8 @@ def parse_uspc_applications(inputdir, outputdir, zip_filename):
     filename = 'USPC_application_classes_data.csv'
 
     with zip.open(name_of_first_file_in_zip) as f:
-        with open(os.path.join(outputdir, filename)) as wfp:
-            writer = csv.writer(wfp, 'w', encoding='utf-8')
+        with open(os.path.join(outputdir, filename), 'w', encoding='utf-8') as wfp:
+            writer = csv.writer(wfp)
             for classification in f:
                 # TODO: Check with the team that this is correct
                 row = parse_uspc_application(classification.decode('utf-8'))
@@ -141,8 +141,8 @@ def parse_uspc_patents(inputdir, outputdir, zip_filename):
            re.search('mcfpat[\d]+\.txt$', name_of_first_file_in_zip))
     filename='USPC_patent_classes_data.csv'
     with zip.open(name_of_first_file_in_zip) as f:
-        with open(os.path.join(outputdir, filename)) as wfp:
-            writer = csv.writer(wfp, 'w', encoding='utf-8')
+        with open(os.path.join(outputdir, filename), 'w', encoding='utf-8') as wfp:
+            writer = csv.writer(wfp)
             for classification in f:
                 row = parse_uspc_patent(classification.decode('utf-8'))
                 writer.writerow(row)
