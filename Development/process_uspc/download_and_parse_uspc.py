@@ -2,6 +2,7 @@ import re
 import os
 from zipfile import ZipFile
 import sys
+import csv
 sys.path.append('{}/{}'.format(os.getcwd(), 'Development'))
 sys.path.append('/project/Development')
 from helpers import general_helpers
@@ -9,17 +10,17 @@ from helpers import general_helpers
 
 def parse_and_write_uspc(inputdir, outputdir):
     """ Parse and write USPC info to CSV tables """
-    uspc_applications = parse_uspc_applications(inputdir,
-                                                'uspc_applications.zip')
-    general_helpers.write_csv(uspc_applications, outputdir,
-              'USPC_application_classes_data.csv')
+    parse_uspc_applications(inputdir, outputdir,
+                            'uspc_applications.zip')
+    # general_helpers.write_csv(uspc_applications, outputdir,
+    #           'USPC_application_classes_data.csv')
 
-    uspc_patents = parse_uspc_patents(inputdir, 'uspc_patents.zip')
-    general_helpers.write_csv(uspc_patents, outputdir,
-              'USPC_patent_classes_data.csv')
+    parse_uspc_patents(inputdir, outputdir, 'uspc_patents.zip')
+    # general_helpers.write_csv(uspc_patents, outputdir,
+    #           'USPC_patent_classes_data.csv')
 
 
-def parse_uspc_applications(inputdir, zip_filename):
+def parse_uspc_applications(inputdir, outputdir, zip_filename):
     """
     Parse USPC Application information from the USPTO MCF Application zip file
     Original Data:
@@ -45,17 +46,17 @@ def parse_uspc_applications(inputdir, zip_filename):
     # The zip file should contain a single text file like 'mcfappl[\d]+.zip'
     number_of_files_in_zip = len(zip.namelist())
     name_of_first_file_in_zip = zip.namelist()[0]
-    assert(number_of_files_in_zip == 1 and
-           re.search('mcfappl[\d]+\.txt$', name_of_first_file_in_zip))
+    assert (number_of_files_in_zip == 1 and
+            re.search('mcfappl[\d]+\.txt$', name_of_first_file_in_zip))
+    filename = 'USPC_application_classes_data.csv'
 
-    rows = []
     with zip.open(name_of_first_file_in_zip) as f:
-        for classification in f:
-            # TODO: Check with the team that this is correct
-            row = parse_uspc_application(classification.decode('utf-8'))
-            rows.append(row)
-
-    return rows
+        with open(os.path.join(outputdir, filename)) as wfp:
+            writer = csv.writer(wfp, 'w', encoding='utf-8')
+            for classification in f:
+                # TODO: Check with the team that this is correct
+                row = parse_uspc_application(classification.decode('utf-8'))
+                writer.writerow(row)
 
 
 def parse_uspc_application(row):
@@ -108,7 +109,7 @@ def parse_subclass(subclass):
     return subclass
 
 
-def parse_uspc_patents(inputdir, zip_filename):
+def parse_uspc_patents(inputdir, outputdir, zip_filename):
     """
     Parse USPC Patent information from the USPTO MCF Patent zip file
     Original Data:
@@ -138,13 +139,13 @@ def parse_uspc_patents(inputdir, zip_filename):
     name_of_first_file_in_zip = zip.namelist()[0]
     assert(number_of_files_in_zip == 1 and
            re.search('mcfpat[\d]+\.txt$', name_of_first_file_in_zip))
-
+    filename='USPC_patent_classes_data.csv'
     with zip.open(name_of_first_file_in_zip) as f:
-        for classification in f:
-            row = parse_uspc_patent(classification.decode('utf-8'))
-            rows.append(row)
-
-    return rows
+        with open(os.path.join(outputdir, filename)) as wfp:
+            writer = csv.writer(wfp, 'w', encoding='utf-8')
+            for classification in f:
+                row = parse_uspc_patent(classification.decode('utf-8'))
+                writer.writerow(row)
 
 
 def parse_uspc_patent(row):
