@@ -1,0 +1,1775 @@
+{
+  "subdoc-bibliographic-information": {
+    "derived-db-fields": [],
+    "document-id": {
+      "derived-db-fields": [],
+      "doc-number": [
+        {
+          "db-field": "application.number",
+          "existing": true
+        }
+      ],
+      "kind-code": [
+        {
+          "db-field": "kind-code",
+          "existing": true
+        }
+      ],
+      "document-date": [
+        {
+          "db-field": "application.date",
+          "existing": true
+        }
+      ],
+      "country-code": [
+        {
+          "db-field": "application.country",
+          "existing": true
+        }
+      ]
+    },
+    "publication-filing-type": [
+      {
+        "db-field": "publication-filing-type",
+        "existing": true
+      }
+    ],
+    "domestic-filing-data": {
+      "derived-db-fields": [],
+      "application-number": {
+        "derived-db-fields": [],
+        "doc-number": [
+          {
+            "db-field": "application_update.number_updated",
+            "existing": true
+          }
+        ]
+      },
+      "application-number-series-code": [
+        {
+          "db-field": "application-number-series-code",
+          "existing": true
+        }
+      ],
+      "filing-date": [
+        {
+          "db-field": "filing-date",
+          "existing": true
+        }
+      ],
+      "continued-prosecution-application-flag": [
+        {
+          "db-field": "",
+          "existing": false
+        }
+      ],
+      "rule-47-flag": [
+        {
+          "db-field": "",
+          "existing": false
+        }
+      ]
+    },
+    "foreign-priority-data": {
+      "derived-db-fields": [],
+      "priority-application-number": {
+        "derived-db-fields": [],
+        "doc-number": [
+          {
+            "db-field": "doc-number",
+            "existing": true
+          }
+        ]
+      },
+      "filing-date": [
+        {
+          "db-field": "filing-date",
+          "existing": true
+        }
+      ],
+      "country-code": [
+        {
+          "db-field": "country-code",
+          "existing": true
+        }
+      ]
+    },
+    "technical-information": {
+      "derived-db-fields": [],
+      "classification-ipc": {
+        "derived-db-fields": [],
+        "classification-ipc-primary": {
+          "derived-db-fields": [],
+          "ipc": [
+            {
+              "db-field": "ipc",
+              "existing": true
+            }
+          ]
+        },
+        "classification-ipc-secondary": {
+          "derived-db-fields": [],
+          "ipc": [
+            {
+              "db-field": "ipc",
+              "existing": true
+            }
+          ]
+        },
+        "classification-ipc-edition": [
+          {
+            "db-field": "classification-ipc-edition",
+            "existing": true
+          }
+        ]
+      },
+      "classification-us": {
+        "derived-db-fields": [],
+        "classification-us-primary": {
+          "derived-db-fields": [],
+          "uspc": {
+            "derived-db-fields": [],
+            "class": [
+              {
+                "db-field": "uspc.mainclass_id",
+                "existing": true
+              }
+            ],
+            "subclass": [
+              {
+                "db-field": "uspc.subclass_id",
+                "existing": true
+              }
+            ]
+          }
+        },
+        "classification-us-secondary": {
+          "derived-db-fields": [],
+          "uspc": {
+            "derived-db-fields": [],
+            "class": [
+              {
+                "db-field": "class",
+                "existing": true
+              }
+            ],
+            "subclass": [
+              {
+                "db-field": "subclass",
+                "existing": true
+              }
+            ]
+          }
+        }
+      },
+      "title-of-invention": [
+        {
+          "db-field": "application.title",
+          "existing": true
+        }
+      ],
+      "botanic": {
+        "derived-db-fields": [],
+        "latin-name": [
+          {
+            "db-field": "latin-name",
+            "existing": true
+          }
+        ],
+        "variety": [
+          {
+            "db-field": "variety",
+            "existing": true
+          }
+        ]
+      },
+      "citation": {
+        "derived-db-fields": [],
+        "cited-patent-literature": {
+          "derived-db-fields": [],
+          "document-id": {
+            "derived-db-fields": [],
+            "doc-number": [
+              {
+                "db-field": "doc-number",
+                "existing": true
+              }
+            ],
+            "kind-code": [
+              {
+                "db-field": "kind-code",
+                "existing": true
+              }
+            ],
+            "document-date": [
+              {
+                "db-field": "document-date",
+                "existing": true
+              }
+            ],
+            "country-code": [
+              {
+                "db-field": "country-code",
+                "existing": true
+              }
+            ]
+          },
+          "party": {
+            "derived-db-fields": [],
+            "name": {
+              "derived-db-fields": [],
+              "name-prefix": [
+                {
+                  "db-field": "name-prefix",
+                  "existing": true
+                }
+              ],
+              "given-name": [
+                {
+                  "db-field": "given-name",
+                  "existing": true
+                }
+              ],
+              "middle-name": [
+                {
+                  "db-field": "middle-name",
+                  "existing": true
+                }
+              ],
+              "family-name": [
+                {
+                  "db-field": "family-name",
+                  "existing": true
+                }
+              ],
+              "name-suffix": [
+                {
+                  "db-field": "name-suffix",
+                  "existing": true
+                }
+              ]
+            },
+            "organization-name": [
+              {
+                "db-field": "organization-name",
+                "existing": true
+              }
+            ],
+            "address": {
+              "derived-db-fields": [],
+              "military-address": [
+                {
+                  "db-field": "military-address",
+                  "existing": true
+                }
+              ],
+              "address-1": [
+                {
+                  "db-field": "address-1",
+                  "existing": true
+                }
+              ],
+              "address-2": [
+                {
+                  "db-field": "address-2",
+                  "existing": true
+                }
+              ],
+              "city": [
+                {
+                  "db-field": "city",
+                  "existing": true
+                }
+              ],
+              "state": [
+                {
+                  "db-field": "state",
+                  "existing": true
+                }
+              ],
+              "postalcode": [
+                {
+                  "db-field": "postalcode",
+                  "existing": true
+                }
+              ],
+              "country": {
+                "derived-db-fields": [],
+                "country-code": [
+                  {
+                    "db-field": "country-code",
+                    "existing": true
+                  }
+                ]
+              },
+              "email": [
+                {
+                  "db-field": "email",
+                  "existing": true
+                }
+              ],
+              "telephone": [
+                {
+                  "db-field": "telephone",
+                  "existing": true
+                }
+              ],
+              "fax": [
+                {
+                  "db-field": "fax",
+                  "existing": true
+                }
+              ]
+            }
+          },
+          "classification-ipc": {
+            "derived-db-fields": [],
+            "classification-ipc-primary": {
+              "derived-db-fields": [],
+              "ipc": [
+                {
+                  "db-field": "ipc",
+                  "existing": true
+                }
+              ]
+            },
+            "classification-ipc-secondary": {
+              "derived-db-fields": [],
+              "ipc": [
+                {
+                  "db-field": "ipc",
+                  "existing": true
+                }
+              ]
+            },
+            "classification-ipc-edition": [
+              {
+                "db-field": "classification-ipc-edition",
+                "existing": true
+              }
+            ]
+          },
+          "classification-us": {
+            "derived-db-fields": [],
+            "classification-us-primary": {
+              "derived-db-fields": [],
+              "uspc": {
+                "derived-db-fields": [],
+                "class": [
+                  {
+                    "db-field": "class",
+                    "existing": true
+                  }
+                ],
+                "subclass": [
+                  {
+                    "db-field": "subclass",
+                    "existing": true
+                  }
+                ]
+              }
+            },
+            "classification-us-secondary": {
+              "derived-db-fields": [],
+              "uspc": {
+                "derived-db-fields": [],
+                "class": [
+                  {
+                    "db-field": "class",
+                    "existing": true
+                  }
+                ],
+                "subclass": [
+                  {
+                    "db-field": "subclass",
+                    "existing": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "relevant-section": [
+          {
+            "db-field": "relevant-section",
+            "existing": true
+          }
+        ]
+      }
+    },
+    "continuity-data": {
+      "derived-db-fields": [],
+      "division-of": {
+        "derived-db-fields": [],
+        "parent-child": {
+          "derived-db-fields": [],
+          "child": {
+            "derived-db-fields": [],
+            "document-id": {
+              "derived-db-fields": [],
+              "doc-number": [
+                {
+                  "db-field": "doc-number",
+                  "existing": true
+                }
+              ],
+              "kind-code": [
+                {
+                  "db-field": "kind-code",
+                  "existing": true
+                }
+              ],
+              "document-date": [
+                {
+                  "db-field": "document-date",
+                  "existing": true
+                }
+              ],
+              "country-code": [
+                {
+                  "db-field": "country-code",
+                  "existing": true
+                }
+              ]
+            }
+          },
+          "parent": {
+            "derived-db-fields": [],
+            "document-id": {
+              "derived-db-fields": [],
+              "doc-number": [
+                {
+                  "db-field": "doc-number",
+                  "existing": true
+                }
+              ],
+              "kind-code": [
+                {
+                  "db-field": "kind-code",
+                  "existing": true
+                }
+              ],
+              "document-date": [
+                {
+                  "db-field": "document-date",
+                  "existing": true
+                }
+              ],
+              "country-code": [
+                {
+                  "db-field": "country-code",
+                  "existing": true
+                }
+              ]
+            }
+          },
+          "parent-status": [
+            {
+              "db-field": "parent-status",
+              "existing": true
+            }
+          ],
+          "parent-patent": {
+            "derived-db-fields": [],
+            "document-id": {
+              "derived-db-fields": [],
+              "doc-number": [
+                {
+                  "db-field": "doc-number",
+                  "existing": true
+                }
+              ],
+              "kind-code": [
+                {
+                  "db-field": "kind-code",
+                  "existing": true
+                }
+              ],
+              "document-date": [
+                {
+                  "db-field": "document-date",
+                  "existing": true
+                }
+              ],
+              "country-code": [
+                {
+                  "db-field": "country-code",
+                  "existing": true
+                }
+              ]
+            }
+          }
+        },
+        "parent-pct": {
+          "derived-db-fields": [],
+          "document-id": {
+            "derived-db-fields": [],
+            "doc-number": [
+              {
+                "db-field": "doc-number",
+                "existing": true
+              }
+            ],
+            "kind-code": [
+              {
+                "db-field": "kind-code",
+                "existing": true
+              }
+            ],
+            "document-date": [
+              {
+                "db-field": "document-date",
+                "existing": true
+              }
+            ],
+            "country-code": [
+              {
+                "db-field": "country-code",
+                "existing": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    "prior-publication": {
+      "derived-db-fields": [],
+      "document-id": {
+        "derived-db-fields": [],
+        "doc-number": [
+          {
+            "db-field": "doc-number",
+            "existing": true
+          }
+        ],
+        "kind-code": [
+          {
+            "db-field": "kind-code",
+            "existing": true
+          }
+        ],
+        "document-date": [
+          {
+            "db-field": "document-date",
+            "existing": true
+          }
+        ],
+        "country-code": [
+          {
+            "db-field": "country-code",
+            "existing": true
+          }
+        ]
+      }
+    },
+    "inventors": {
+      "derived-db-fields": [],
+      "first-named-inventor": {
+        "derived-db-fields": [],
+        "name": {
+          "derived-db-fields": [],
+          "name-prefix": [
+            {
+              "db-field": "name-prefix",
+              "existing": true
+            }
+          ],
+          "given-name": [
+            {
+              "db-field": "inventor.name_first",
+              "existing": true
+            }
+          ],
+          "middle-name": [
+            {
+              "db-field": "middle-name",
+              "existing": true
+            }
+          ],
+          "family-name": [
+            {
+              "db-field": "inventor.name_last",
+              "existing": true
+            }
+          ],
+          "name-suffix": [
+            {
+              "db-field": "name-suffix",
+              "existing": true
+            }
+          ]
+        },
+        "address": {
+          "derived-db-fields": [],
+          "military-address": [
+            {
+              "db-field": "military-address",
+              "existing": true
+            }
+          ],
+          "address-1": [
+            {
+              "db-field": "address-1",
+              "existing": true
+            }
+          ],
+          "address-2": [
+            {
+              "db-field": "address-2",
+              "existing": true
+            }
+          ],
+          "city": [
+            {
+              "db-field": "city",
+              "existing": true
+            }
+          ],
+          "state": [
+            {
+              "db-field": "state",
+              "existing": true
+            }
+          ],
+          "postalcode": [
+            {
+              "db-field": "postalcode",
+              "existing": true
+            }
+          ],
+          "country": {
+            "derived-db-fields": [],
+            "country-code": [
+              {
+                "db-field": "country-code",
+                "existing": true
+              }
+            ]
+          },
+          "email": [
+            {
+              "db-field": "email",
+              "existing": true
+            }
+          ],
+          "telephone": [
+            {
+              "db-field": "telephone",
+              "existing": true
+            }
+          ],
+          "fax": [
+            {
+              "db-field": "fax",
+              "existing": true
+            }
+          ]
+        },
+        "residence": {
+          "derived-db-fields": [],
+          "military-service": [
+            {
+              "db-field": "military-service",
+              "existing": true
+            }
+          ]
+        },
+        "authority-applicant": [
+          {
+            "db-field": "authority-applicant",
+            "existing": true
+          }
+        ]
+      }
+    },
+    "assignee": {
+      "derived-db-fields": [],
+      "name": {
+        "derived-db-fields": [],
+        "name-prefix": [
+          {
+            "db-field": "name-prefix",
+            "existing": true
+          }
+        ],
+        "given-name": [
+          {
+            "db-field": "assignee.name_first",
+            "existing": true
+          }
+        ],
+        "middle-name": [
+          {
+            "db-field": "middle-name",
+            "existing": true
+          }
+        ],
+        "family-name": [
+          {
+            "db-field": "assignee.name_last",
+            "existing": true
+          }
+        ],
+        "name-suffix": [
+          {
+            "db-field": "name-suffix",
+            "existing": true
+          }
+        ]
+      },
+      "organization-name": [
+        {
+          "db-field": "assignee.organization",
+          "existing": true
+        }
+      ],
+      "address": {
+        "derived-db-fields": [],
+        "military-address": [
+          {
+            "db-field": "military-address",
+            "existing": true
+          }
+        ],
+        "address-1": [
+          {
+            "db-field": "address-1",
+            "existing": true
+          }
+        ],
+        "address-2": [
+          {
+            "db-field": "address-2",
+            "existing": true
+          }
+        ],
+        "city": [
+          {
+            "db-field": "city",
+            "existing": true
+          }
+        ],
+        "state": [
+          {
+            "db-field": "state",
+            "existing": true
+          }
+        ],
+        "postalcode": [
+          {
+            "db-field": "postalcode",
+            "existing": true
+          }
+        ],
+        "country": {
+          "derived-db-fields": [],
+          "country-code": [
+            {
+              "db-field": "country-code",
+              "existing": true
+            }
+          ]
+        },
+        "email": [
+          {
+            "db-field": "email",
+            "existing": true
+          }
+        ],
+        "telephone": [
+          {
+            "db-field": "telephone",
+            "existing": true
+          }
+        ],
+        "fax": [
+          {
+            "db-field": "fax",
+            "existing": true
+          }
+        ]
+      },
+      "assignee-type": [
+        {
+          "db-field": "assignee-type",
+          "existing": true
+        }
+      ]
+    },
+    "correspondence-address": {
+      "derived-db-fields": [],
+      "name-1": [
+        {
+          "db-field": "name-1",
+          "existing": true
+        }
+      ],
+      "name-2": [
+        {
+          "db-field": "name-2",
+          "existing": true
+        }
+      ],
+      "address": {
+        "derived-db-fields": [],
+        "military-address": [
+          {
+            "db-field": "military-address",
+            "existing": true
+          }
+        ],
+        "address-1": [
+          {
+            "db-field": "address-1",
+            "existing": true
+          }
+        ],
+        "address-2": [
+          {
+            "db-field": "address-2",
+            "existing": true
+          }
+        ],
+        "city": [
+          {
+            "db-field": "city",
+            "existing": true
+          }
+        ],
+        "state": [
+          {
+            "db-field": "state",
+            "existing": true
+          }
+        ],
+        "postalcode": [
+          {
+            "db-field": "postalcode",
+            "existing": true
+          }
+        ],
+        "country": {
+          "derived-db-fields": [],
+          "country-code": [
+            {
+              "db-field": "country-code",
+              "existing": true
+            }
+          ]
+        },
+        "email": [
+          {
+            "db-field": "email",
+            "existing": true
+          }
+        ],
+        "telephone": [
+          {
+            "db-field": "telephone",
+            "existing": true
+          }
+        ],
+        "fax": [
+          {
+            "db-field": "fax",
+            "existing": true
+          }
+        ]
+      }
+    },
+    "international-conventions": {
+      "derived-db-fields": [],
+      "pct-application": {
+        "derived-db-fields": [],
+        "document-id": {
+          "derived-db-fields": [],
+          "doc-number": [
+            {
+              "db-field": "doc-number",
+              "existing": true
+            }
+          ],
+          "kind-code": [
+            {
+              "db-field": "kind-code",
+              "existing": true
+            }
+          ],
+          "document-date": [
+            {
+              "db-field": "document-date",
+              "existing": true
+            }
+          ],
+          "country-code": [
+            {
+              "db-field": "country-code",
+              "existing": true
+            }
+          ]
+        }
+      },
+      "usc371-date": [
+        {
+          "db-field": "",
+          "existing": false
+        }
+      ],
+      "usc102e-date": [
+        {
+          "db-field": "",
+          "existing": false
+        }
+      ],
+      "pct-publication": {
+        "derived-db-fields": [],
+        "document-id": {
+          "derived-db-fields": [],
+          "doc-number": [
+            {
+              "db-field": "doc-number",
+              "existing": true
+            }
+          ],
+          "kind-code": [
+            {
+              "db-field": "kind-code",
+              "existing": true
+            }
+          ],
+          "document-date": [
+            {
+              "db-field": "document-date",
+              "existing": true
+            }
+          ],
+          "country-code": [
+            {
+              "db-field": "country-code",
+              "existing": true
+            }
+          ]
+        }
+      }
+    },
+    "appendix-data": {
+      "derived-db-fields": [],
+      "object-reference": {
+        "derived-db-fields": [],
+        "object-description": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ],
+        "object-id": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ],
+        "object-contents": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ]
+      }
+    }
+  },
+  "subdoc-abstract": {
+    "derived-db-fields": [],
+    "heading": [
+      {
+        "db-field": "application.abstract",
+        "existing": true
+      }
+    ]
+  },
+  "subdoc-description": {
+    "derived-db-fields": [],
+    "copyright-statement": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ]
+    },
+    "cross-reference-to-related-applications": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ]
+    },
+    "federal-research-statement": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ],
+      "paragraph-federal-research-statement": [
+        {
+          "db-field": "paragraph-federal-research-statement",
+          "existing": true
+        }
+      ]
+    },
+    "background-of-invention": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ]
+    },
+    "summary-of-invention": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ]
+    },
+    "brief-description-of-drawings": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ]
+    },
+    "brief-description-of-sequences": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ]
+    },
+    "detailed-description": {
+      "derived-db-fields": [],
+      "biological-deposit": {
+        "derived-db-fields": [],
+        "number": [
+          {
+            "db-field": "number",
+            "existing": true
+          }
+        ],
+        "deposit-date": [
+          {
+            "db-field": "deposit-date",
+            "existing": true
+          }
+        ],
+        "deposit-term": [
+          {
+            "db-field": "deposit-term",
+            "existing": true
+          }
+        ],
+        "depository": {
+          "derived-db-fields": [],
+          "organization-name": [
+            {
+              "db-field": "organization-name",
+              "existing": true
+            }
+          ],
+          "address": {
+            "derived-db-fields": [],
+            "military-address": [
+              {
+                "db-field": "military-address",
+                "existing": true
+              }
+            ],
+            "address-1": [
+              {
+                "db-field": "address-1",
+                "existing": true
+              }
+            ],
+            "address-2": [
+              {
+                "db-field": "address-2",
+                "existing": true
+              }
+            ],
+            "city": [
+              {
+                "db-field": "city",
+                "existing": true
+              }
+            ],
+            "state": [
+              {
+                "db-field": "state",
+                "existing": true
+              }
+            ],
+            "postalcode": [
+              {
+                "db-field": "postalcode",
+                "existing": true
+              }
+            ],
+            "country": {
+              "derived-db-fields": [],
+              "country-code": [
+                {
+                  "db-field": "country-code",
+                  "existing": true
+                }
+              ]
+            },
+            "email": [
+              {
+                "db-field": "email",
+                "existing": true
+              }
+            ],
+            "telephone": [
+              {
+                "db-field": "telephone",
+                "existing": true
+              }
+            ],
+            "fax": [
+              {
+                "db-field": "fax",
+                "existing": true
+              }
+            ]
+          }
+        },
+        "deposit-accession-number": [
+          {
+            "db-field": "deposit-accession-number",
+            "existing": true
+          }
+        ],
+        "deposit-description": [
+          {
+            "db-field": "deposit-description",
+            "existing": true
+          }
+        ]
+      },
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ]
+    },
+    "program-listing-deposit": {
+      "derived-db-fields": [],
+      "heading": [
+        {
+          "db-field": "heading",
+          "existing": true
+        }
+      ],
+      "number": [
+        {
+          "db-field": "number",
+          "existing": true
+        }
+      ],
+      "program-listing": [
+        {
+          "db-field": "program-listing",
+          "existing": true
+        }
+      ]
+    }
+  },
+  "sequence-cwu": {
+    "derived-db-fields": [],
+    "number": [
+      {
+        "db-field": "",
+        "existing": false
+      }
+    ],
+    "sequence-list-old-rules": {
+      "derived-db-fields": [],
+      "s-1": {
+        "derived-db-fields": [],
+        "s-1-iii": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ],
+        "s-1-iv": {
+          "derived-db-fields": [],
+          "party": {
+            "derived-db-fields": [],
+            "name": {
+              "derived-db-fields": [],
+              "name-prefix": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "given-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "middle-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "family-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "name-suffix": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ]
+            },
+            "organization-name": [
+              {
+                "db-field": "",
+                "existing": false
+              }
+            ],
+            "address": {
+              "derived-db-fields": [],
+              "military-address": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "address-1": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "address-2": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "city": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "state": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "postalcode": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "country": {
+                "derived-db-fields": [],
+                "country-code": [
+                  {
+                    "db-field": "",
+                    "existing": false
+                  }
+                ]
+              },
+              "email": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "telephone": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "fax": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ]
+            }
+          }
+        },
+        "s-1-v": {
+          "derived-db-fields": [],
+          "s-1-v-a": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-1-v-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-1-v-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-1-v-d": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-1-viii": {
+          "derived-db-fields": [],
+          "s-1-viii-a": {
+            "derived-db-fields": [],
+            "name": {
+              "derived-db-fields": [],
+              "name-prefix": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "given-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "middle-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "family-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "name-suffix": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ]
+            }
+          },
+          "s-1-viii-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-1-viii-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-1-ix": {
+          "derived-db-fields": [],
+          "s-1-ix-a": {
+            "derived-db-fields": [],
+            "telephone": [
+              {
+                "db-field": "",
+                "existing": false
+              }
+            ]
+          },
+          "s-1-ix-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-1-ix-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        }
+      },
+      "s-2": {
+        "derived-db-fields": [],
+        "s-2-i": {
+          "derived-db-fields": [],
+          "s-2-i-a": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-i-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-i-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-i-d": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-2-ii": {
+          "derived-db-fields": [],
+          "s-2-ii-mt": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-ii-a": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-2-iii": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ],
+        "s-2-iv": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ],
+        "s-2-v": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ],
+        "s-2-vi": {
+          "derived-db-fields": [],
+          "s-2-vi-a": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-d": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-e": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-f": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-g": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-h": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vi-i": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-2-vii": {
+          "derived-db-fields": [],
+          "s-2-vii-a": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-vii-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-2-viii": {
+          "derived-db-fields": [],
+          "s-2-viii-a": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-viii-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-viii-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-2-ix": {
+          "derived-db-fields": [],
+          "s-2-ix-a": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-ix-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-ix-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-ix-d": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-2-x": {
+          "derived-db-fields": [],
+          "s-2-x-a": {
+            "derived-db-fields": [],
+            "name": {
+              "derived-db-fields": [],
+              "name-prefix": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "given-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "middle-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "family-name": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ],
+              "name-suffix": [
+                {
+                  "db-field": "",
+                  "existing": false
+                }
+              ]
+            }
+          },
+          "s-2-x-b": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-x-c": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-x-d": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-x-e": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-x-f": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-x-g": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ],
+          "s-2-x-h": {
+            "derived-db-fields": [],
+            "doc-number": [
+              {
+                "db-field": "",
+                "existing": false
+              }
+            ]
+          },
+          "s-2-x-i": {
+            "derived-db-fields": [],
+            "date": [
+              {
+                "db-field": "",
+                "existing": false
+              }
+            ]
+          },
+          "s-2-x-j": {
+            "derived-db-fields": [],
+            "date": [
+              {
+                "db-field": "",
+                "existing": false
+              }
+            ]
+          },
+          "s-2-x-k": [
+            {
+              "db-field": "",
+              "existing": false
+            }
+          ]
+        },
+        "s-2-xi": [
+          {
+            "db-field": "",
+            "existing": false
+          }
+        ]
+      }
+    },
+    "image": [
+      {
+        "db-field": "",
+        "existing": false
+      }
+    ]
+  },
+  "subdoc-claims": {
+    "derived-db-fields": [],
+    "heading": [
+      {
+        "db-field": "heading",
+        "existing": true
+      }
+    ],
+    "claim": {
+      "derived-db-fields": [],
+      "claim-text": [
+        {
+          "db-field": "claim.text",
+          "existing": true
+        }
+      ]
+    }
+  },
+  "subdoc-drawings": {
+    "derived-db-fields": [],
+    "heading": [
+      {
+        "db-field": "heading",
+        "existing": true
+      }
+    ],
+    "representative-figure": [
+      {
+        "db-field": "representative-figure",
+        "existing": true
+      }
+    ],
+    "figure": [
+      {
+        "db-field": "figure",
+        "existing": true
+      }
+    ]
+  }
+}
