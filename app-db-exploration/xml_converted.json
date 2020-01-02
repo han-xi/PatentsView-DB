@@ -304,20 +304,20 @@
               },
               "email": [
                 {
-                  "db-field": "email",
-                  "existing": true
+                  "db-field": "",
+                  "existing": false
                 }
               ],
               "telephone": [
                 {
-                  "db-field": "telephone",
-                  "existing": true
+                  "db-field": "",
+                  "existing": false
                 }
               ],
               "fax": [
                 {
-                  "db-field": "fax",
-                  "existing": true
+                  "db-field": "",
+                  "existing": false
                 }
               ]
             }
@@ -648,20 +648,20 @@
           },
           "email": [
             {
-              "db-field": "email",
-              "existing": true
+              "db-field": "",
+              "existing": false
             }
           ],
           "telephone": [
             {
-              "db-field": "telephone",
-              "existing": true
+              "db-field": "",
+              "existing": false
             }
           ],
           "fax": [
             {
-              "db-field": "fax",
-              "existing": true
+              "db-field": "",
+              "existing": false
             }
           ]
         },
@@ -772,20 +772,20 @@
         },
         "email": [
           {
-            "db-field": "email",
-            "existing": true
+            "db-field": "",
+            "existing": false
           }
         ],
         "telephone": [
           {
-            "db-field": "telephone",
-            "existing": true
+            "db-field": "",
+            "existing": false
           }
         ],
         "fax": [
           {
-            "db-field": "fax",
-            "existing": true
+            "db-field": "",
+            "existing": false
           }
         ]
       },
@@ -859,20 +859,20 @@
         },
         "email": [
           {
-            "db-field": "email",
-            "existing": true
+            "db-field": "",
+            "existing": false
           }
         ],
         "telephone": [
           {
-            "db-field": "telephone",
-            "existing": true
+            "db-field": "",
+            "existing": false
           }
         ],
         "fax": [
           {
-            "db-field": "fax",
-            "existing": true
+            "db-field": "",
+            "existing": false
           }
         ]
       }
@@ -1136,20 +1136,20 @@
             },
             "email": [
               {
-                "db-field": "email",
-                "existing": true
+                "db-field": "",
+                "existing": false
               }
             ],
             "telephone": [
               {
-                "db-field": "telephone",
-                "existing": true
+                "db-field": "",
+                "existing": false
               }
             ],
             "fax": [
               {
-                "db-field": "fax",
-                "existing": true
+                "db-field": "",
+                "existing": false
               }
             ]
           }
