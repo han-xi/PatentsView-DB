@@ -62,7 +62,7 @@ while True:
     print('Next iteration... ', itr)
    
     sql_stmt_inner = "(select uuid from {0}.{1} order by uuid limit {2} offset {3}) ri".format(new_db, 'rawinventor',  limit, offset)
-   sql_stmt_template = "select lf.uuid as current_rawinventor_id, ri_old.uuid as old_rawinventor_id, lf.database_update, lf.inventor_id from {0} left join {1}.{2} lf on ri.uuid = lf.uuid left join {3}.{4} ri_old on lf.uuid = ri_old.uuid;".format(sql_stmt_inner,new_db,'persistent_inventor_disambig_long', old_db, 'rawinventor')
+    sql_stmt_template = "select lf.uuid as current_rawinventor_id, ri_old.uuid as old_rawinventor_id, lf.database_update, lf.inventor_id from {0} left join {1}.{2} lf on ri.uuid = lf.uuid left join {3}.{4} ri_old on lf.uuid = ri_old.uuid;".format(sql_stmt_inner,new_db,'persistent_inventor_disambig_long', old_db, 'rawinventor')
 
     print(sql_stmt_template)
     result = db_con.execute(sql_stmt_template)

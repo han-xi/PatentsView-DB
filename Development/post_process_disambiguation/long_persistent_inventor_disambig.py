@@ -87,6 +87,6 @@ print('###########################################')
 print('total time taken:', round(time.time() - start, 2), ' seconds')
 print('###########################################')
 
-######### 4. load data
+######### 3. load data
 db_con.execute("LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1}.{2} FIELDS TERMINATED BY '\t' IGNORE 1 lines (uuid, database_update, inventor_id);".format(outfile_fp, new_db, 'persistent_inventor_disambig'))
 
