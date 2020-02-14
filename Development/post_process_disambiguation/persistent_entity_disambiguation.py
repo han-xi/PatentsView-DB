@@ -84,7 +84,7 @@ def write_long_outfile_newrows(db_con, new_db, raw_table, id_col, total_rows, ne
 # REQUIRES: entity (either inventor or assignee)
 # MODIFIES: nothing
 # EFFECTS: updates persistent long entity table with new rows from db update
-def update_persistent_long_entity(entity):
+def update_persistent_long_entity(entity, config):
     
     config = configparser.ConfigParser()
     config.read(project_home + '/Development/config.ini')
@@ -315,7 +315,7 @@ def create_persistent_wide_entity(entity):
     ######### 4. load data
     db_con.execute("LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1}.{2} FIELDS TERMINATED BY '\t' NULL DEFINED BY '' IGNORE 1 lines;".format(outfile_fp_wide, new_db, persistent_disambig_table))
 
-    return
+    return True
 
 
 
@@ -323,32 +323,32 @@ def create_persistent_wide_entity(entity):
 # OPERATOR TASKS
 #########################################################################################################
 
-update_persist_long_inv = PythonOperator(
-    task_id='persistent_long_inventor_update',
+update_persistent_long_inventor = PythonOperator(
+    task_id='update_persistent_long_inventor',
     python_callable=update_persistent_long_entity,
-    op_kwargs={'entity': 'inventor'}
+    op_kwargs={'entity': 'inventor', 'config':config}
     dag=dag
     )
       
 
-update_persist_long_assignee = PythonOperator(
-    task_id='persistent_long_assignee_update',
+update_persistent_long_assignee = PythonOperator(
+    task_id='update_persistent_long_assignee',
     python_callable=update_persistent_long_entity,
-    op_kwargs={'entity': 'assignee'}
+    op_kwargs={'entity': 'assignee', 'config':config}
     dag=dag
     )
 
-create_persist_wide_inv = PythonOperator(
+create_persistent_wide_inventor = PythonOperator(
     task_id='create_persistent_wide_inventor',
     python_callable=create_persistent_wide_entity,
-    op_kwargs={'entity': 'inventor'}
+    op_kwargs={'entity': 'inventor', 'config':config}
     dag=dag
     )
 
 
-create_persist_wide_assignee = PythonOperator(
+create_persistent_wide_assignee = PythonOperator(
     task_id='create_persistent_wide_assignee',
     python_callable=create_persistent_wide_entity,
-    op_kwargs={'entity': 'assignee'}
+    op_kwargs={'entity': 'assignee', 'config':config}
     dag=dag
     )
